@@ -2,7 +2,7 @@ extends Node
 
 ## Le banc de vérification du projet — l'outil de la machine, pas du joueur.
 ## À lancer en ligne de commande, sans fenêtre :
-##   godot --headless --path . res://verification.tscn
+##   godot --headless --path . res://verification/banc.tscn
 ## Il rejoue les règles sensibles (vision du rôdeur, les quatre cachettes,
 ## les visées) et passe le même audit d'emplacements que le bandeau rouge
 ## de l'écran (voir maison.gd). « === ECHECS: 0 === » attendu ; tout autre

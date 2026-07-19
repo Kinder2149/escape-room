@@ -3,7 +3,7 @@
 ; Le banc de vérification du projet — un outil, pas une scène de jeu.
 ; Voir verification.gd pour ce qu'il contrôle et comment le lancer.
 
-[ext_resource type="Script" path="res://verification.gd" id="1_verif"]
+[ext_resource type="Script" path="res://verification/banc.gd" id="1_verif"]
 
 [node name="Verification" type="Node"]
 script = ExtResource("1_verif")
