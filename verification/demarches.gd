@@ -4,7 +4,7 @@ extends SceneTree
 #  A) en ronde (2 m/s)          -> Marche
 #  B) en poursuite a vue (4 m/s)-> Course
 #  C) plante a fouiller (0 m/s)  -> Guet
-# Et l'ancienne silhouette, qui n'a pas d'animation, ne doit rien casser.
+# Et les DEUX rodeurs doivent etre animes : plus d'ancienne silhouette.
 
 var jeu: Node3D = null
 var frames := 0
@@ -31,8 +31,8 @@ func _process(_d: float) -> bool:
 		l[1].global_position = Vector3(0, 40, 0)
 		j.set_physics_process(false)
 		j.global_position = Vector3(0, 40, 0)
-		_exige("l'ancienne silhouette n'a pas d'animation et ne plante pas",
-			l[1].animations == null)
+		_exige("les DEUX rodeurs sont animes",
+			l[0].animations != null and l[1].animations != null)
 		return false
 
 	var vitesse := Vector2(r.velocity.x, r.velocity.z).length()

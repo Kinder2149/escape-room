@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3]
+[gd_scene load_steps=18 format=3]
 
 ; Scène principale : assemble le décor, le joueur, le rôdeur, la sortie,
 ; les coffres et les cachettes. À chaque lancement, jeu.gd tire la
@@ -9,7 +9,6 @@
 [ext_resource type="PackedScene" path="res://joueur.tscn" id="3_joueur"]
 [ext_resource type="PackedScene" path="res://sortie.tscn" id="4_sortie"]
 [ext_resource type="PackedScene" path="res://coffre.tscn" id="5_coffre"]
-[ext_resource type="PackedScene" path="res://rodeur.tscn" id="6_rodeur"]
 [ext_resource type="PackedScene" path="res://cachette.tscn" id="7_cachette"]
 [ext_resource type="PackedScene" path="res://coffre_fort.tscn" id="8_coffre_fort"]
 [ext_resource type="PackedScene" path="res://rodeur_incarne.tscn" id="9_rodeur_incarne"]
@@ -62,20 +61,18 @@ transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -9.8, 0, 4.5)
 [node name="CoffreFort" parent="." instance=ExtResource("8_coffre_fort")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 7.5)
 
-; UN RÔDEUR PAR NIVEAU (jet 8). L'ordre dans le groupe « rodeurs » décide de
-; leur étage, du bas vers le haut — voir lance_les_rodeurs dans jeu.gd.
+; UN RÔDEUR PAR NIVEAU, tous deux incarnés par le pantin. L'ordre dans le
+; groupe « rodeurs » décide de leur étage, du bas vers le haut — voir
+; lance_les_rodeurs dans jeu.gd.
 ; Rangés dans un couloir et invisibles tant que la maison n'est pas prête :
 ; jeu.gd les pose ensuite sur un départ sûr de leur niveau (voir place_rodeur).
 ; Leur position de rangement ne doit coïncider avec AUCUN repère de réveil —
 ; deux corps au même endroit, et la physique expulse le joueur (défaut du Salon).
-; ESSAI (jet 11) : celui du rez-de-chaussée est le pantin animé, celui de
-; l'étage garde l'ancienne silhouette. Les deux dans la même partie, pour
-; pouvoir comparer sans changer de fichier.
 [node name="Rodeur" parent="." groups=["rodeurs"] instance=ExtResource("9_rodeur_incarne")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
 visible = false
 
-[node name="RodeurEtage" parent="." groups=["rodeurs"] instance=ExtResource("6_rodeur")]
+[node name="RodeurEtage" parent="." groups=["rodeurs"] instance=ExtResource("9_rodeur_incarne")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.3, 0)
 visible = false
 

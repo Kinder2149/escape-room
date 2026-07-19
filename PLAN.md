@@ -37,19 +37,30 @@ Le jeu se gagne, se perd, se relance, et laisse le choix entre courir et attendr
 ---
 
 ## Structure Godot — actuelle
-**Huit scènes de jeu**, sur un plafond de vingt, plus un outil :
+**Neuf scènes de jeu**, sur un plafond de vingt, plus un outil :
 - **Joueur** — corps, caméra, contrôles, visée, torche, état « caché ».
-- **Maison** — murs, couloir, mobilier, pénombre, carte de navigation calculée et **vérifiée** au démarrage, audit des emplacements.
-- **Pièce** — le nom d'une pièce et ses trois repères (coffre, porte rouge, réveil) ; posée six fois dans la Maison, seule source des emplacements.
+- **Maison** — murs, couloirs, mobilier, pénombre, sols colorés par pièce, carte de navigation calculée et **vérifiée** au démarrage, audit des emplacements.
+- **Pièce** — le nom d'une pièce et ses trois repères (coffre, porte rouge, réveil) ; posée **treize fois** dans la Maison, seule source des emplacements.
 - **Coffre** — posée deux fois, placée au lancement.
-- **CoffreFort** — même script, modèle métal plus gros, le badge dedans.
-- **Cachette** — posée quatre fois, réglable meuble par meuble.
-- **Sortie** — la porte rouge, placée au lancement.
-- **Rôdeur** — silhouette, torche, patrouille, poursuite, ouverture d'une cachette, règle de vision unique (jeu + tirage).
-- **Jeu** — le tirage au sort et la distribution, les morceaux, « Gagné », « Attrapé », remise à zéro, bandeau d'audit.
-- **Vérification** *(outil, hors jeu)* — le banc en ligne de commande : vision, cachettes, visées, audit des emplacements.
+- **CoffreFort** — même script, modèle acier plus gros, le badge dedans.
+- **Cachette** — posée **neuf fois**, réglable meuble par meuble.
+- **Sortie** — la porte rouge, placée au lancement, toujours de plain-pied.
+- **RôdeurIncarné** — le pantin animé : squelette, trois démarches, lanterne portée devant. **Posée deux fois**, une par niveau.
+- **Jeu** — le tirage au sort et la distribution, la chaîne d'objectifs, « Gagné », « Attrapé », remise à zéro, bandeau d'audit.
+- **Vérification** *(outil, hors jeu)* — voir ci-dessous.
 
-Sources 3D : `mobilier.blend` (le mobilier, le coffre, le morceau de clé, la silhouette du rôdeur), exportées en `.glb`.
+Sources 3D, dans `sources/` et à la racine :
+- `mobilier.blend` — le mobilier rangé **par pièce**, les coffres, le morceau de clé, le badge. *Piège : exporter une collection ne prend pas ses sous-collections ; l'export réussit en silence et produit un fichier vide.*
+- `sources/Meshy_AI_pixellabs_voodoo_doll_biped.zip` — **la seule source du pantin**, il n'est pas dans le fichier Blender. Voir `sources/LISEZMOI.md`.
+
+## Le filet de sécurité — `verifier.bat`
+Un fichier à double-cliquer, à la racine. Il rejoue **dix-huit séries de contrôles** (le banc principal plus dix-sept sondes dans `verification/`) et rend un verdict unique. Le détail part dans `verification.log`.
+
+Il couvre : la vision et les neuf cachettes, l'audit des emplacements, quarante tirages et leurs garde-fous, les règles de l'étage, la chaîne d'objectifs complète, le coffre-fort, la géométrie de l'étage et de l'aile, les escaliers, les planques contre les murs, les deux rôdeurs et leurs niveaux, la poursuite dans les escaliers, la battue, l'extrapolation de fuite, les allures, les démarches et le glissement au réveil.
+
+> **À lancer avant et après tout changement.** Fermer l'éditeur Godot pendant qu'il tourne.
+>
+> *Leçon : le budget d'une sonde se compte en temps réel, jamais en images — leur débit dépend de la machine, et deux sondes rataient au hasard en rafale.*
 
 ---
 
@@ -227,7 +238,7 @@ Le jeu se joue en quatre temps — deux morceaux, le coffre-fort, le badge, la p
 
 # Jet 11 — Le rôdeur incarné *(clos le 16/07/2026)*
 
-Un pantin de chiffon animé (modèle Meshy, 24 os, 3 démarches) remplace la silhouette. **Dixième et onzième scènes** : `rodeur_incarne.tscn` cohabite avec l'ancienne `rodeur.tscn` — le même script accepte les deux, avec ou sans animations.
+Un pantin de chiffon animé (modèle Meshy, 24 os, 3 démarches) remplace la silhouette. Il a d'abord cohabité avec elle le temps de comparer ; **depuis la remise en ordre, les deux rôdeurs sont incarnés** et l'ancienne silhouette a quitté le projet.
 
 **Ce que le jet a réglé, dans l'ordre où les défauts sont apparus :**
 1. Le modèle regardait à l'envers, ses animations ne bouclaient pas, ses quatre fichiers pesaient 6,5 Mo → un seul de 1,7 Mo, trois démarches.

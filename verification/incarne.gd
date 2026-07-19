@@ -39,8 +39,8 @@ func _process(_delta: float) -> bool:
 			_exige("il joue « Marche » en boucle",
 				anim_vue == "Marche" and lecteur.is_playing()
 				and lecteur.get_animation("Marche").loop_mode == Animation.LOOP_LINEAR)
-		_exige("l'ancienne silhouette n'a PAS de lecteur (elle reste telle quelle)",
-			ancien.animations == null)
+		_exige("celui de l'etage est incarne lui aussi",
+			ancien.animations != null)
 		return false
 
 	if frames > 3:

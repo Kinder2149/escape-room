@@ -20,7 +20,7 @@ La destination était **un manoir sur plusieurs niveaux avec des épreuves qui s
 **Reste du cap d'origine, non construit : la cave.** Elle est prête à recevoir — les niveaux se déduisent de l'altitude des repères, il suffira d'ajouter un rôdeur dans la scène. À cadrer si Kinder la veut.
 
 ## La chaîne d'outils
-- **Blender** — fabrique les décors et les objets 3D. En vue première personne on ne voit pas le personnage, donc l'effort porte sur la maison, pas sur un héros. **Blender est entré dans le jeu** : tout le mobilier, les coffres, les morceaux de clé et la silhouette du rôdeur en viennent.
+- **Blender** — fabrique les décors et les objets 3D. En vue première personne on ne voit pas le personnage, donc l'effort porte sur la maison, pas sur un héros. **Blender est entré dans le jeu** : tout le mobilier, les coffres, le morceau de clé et le badge en viennent. Les rôdeurs, eux, sont un pantin généré sur Meshy — sa source est dans `sources/`, pas dans le fichier Blender.
 - **Godot** — le moteur : assemble la scène et fait vivre l'interaction (déplacement, collisions, tirage au sort, victoire). Piloté par Cascade via MCP.
 - **Kinder** — lance le jeu sur PC et le teste à la main. Personne ne peut tester à ta place.
 
