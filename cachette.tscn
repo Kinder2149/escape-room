@@ -1,0 +1,38 @@
+[gd_scene load_steps=3 format=3]
+
+; Cachette : une plaque invisible plaquée sur la face d'un meuble existant.
+; Elle capte la visée du joueur sans qu'il faille refabriquer le meuble.
+; Sa forme et ses repères sont posés au démarrage par cachette.gd, d'après les
+; réglages de chaque instance (voir jeu.tscn).
+
+[ext_resource type="Script" path="res://cachette.gd" id="1_cachette"]
+
+; Le repère des cachettes est CYAN (jet 10) : c'est le code commun des abris.
+; Repeindre les meubles eux-mêmes n'aurait pas de sens — une baignoire brune
+; pour signaler qu'on peut s'y coucher serait absurde. C'est le repère qui
+; porte le code, et il ne se voit qu'à moins de 4,5 m, jamais à travers un mur.
+[sub_resource type="LabelSettings" id="LabelSettings_repere"]
+font_size = 96
+font_color = Color(0.45, 0.9, 1, 0.85)
+outline_size = 16
+outline_color = Color(0, 0.06, 0.1, 0.85)
+
+[node name="Cachette" type="StaticBody3D"]
+script = ExtResource("1_cachette")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+
+[node name="PointDeVue" type="Marker3D" parent="."]
+
+[node name="PointDeSortie" type="Marker3D" parent="."]
+
+; Le repère brille de lui-même et suit toujours le regard : dans la pénombre,
+; c'est le seul moyen de distinguer un meuble où se glisser d'un simple meuble.
+; Il ne traverse PAS les murs (retour de Kinder, jet 7) : on ne le découvre
+; qu'en entrant dans la pièce, à moins de 4,5 m.
+[node name="Repere" type="Label3D" parent="."]
+billboard = 1
+fixed_size = true
+pixel_size = 0.0022
+text = "◆"
+label_settings = SubResource("LabelSettings_repere")

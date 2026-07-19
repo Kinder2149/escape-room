@@ -1,0 +1,24 @@
+[gd_scene load_steps=5 format=3]
+
+; Le coffre est lui-même le corps physique : la visée du joueur le touche
+; directement, sans avoir à remonter la hiérarchie.
+; Le morceau repose au fond ; couvercle fermé, il est masqué par celui-ci.
+
+[ext_resource type="Script" path="res://coffre.gd" id="1_coffre"]
+[ext_resource type="PackedScene" path="res://coffre.glb" id="2_modele"]
+[ext_resource type="PackedScene" path="res://morceau_cle.glb" id="3_morceau"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_coffre"]
+size = Vector3(0.8, 0.51, 0.5)
+
+[node name="Coffre" type="StaticBody3D"]
+script = ExtResource("1_coffre")
+
+[node name="Modele" parent="." instance=ExtResource("2_modele")]
+
+[node name="Morceau" parent="." instance=ExtResource("3_morceau")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.055, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.255, 0)
+shape = SubResource("BoxShape3D_coffre")

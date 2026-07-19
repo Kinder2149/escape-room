@@ -1,0 +1,38 @@
+[gd_scene load_steps=6 format=3]
+
+; La porte rouge « SORTIE ». Elle est plaquée contre un mur et regarde vers -Z.
+; Elle est un corps physique : la visée du joueur la touche directement.
+; (La zone de victoire du jet 1 est retirée : on n'ouvre plus en s'approchant.)
+
+[ext_resource type="Script" path="res://sortie.gd" id="1_sortie"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rouge"]
+albedo_color = Color(0.7, 0.08, 0.08, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_porte"]
+material = SubResource("StandardMaterial3D_rouge")
+size = Vector3(1.2, 2.2, 0.1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_porte"]
+size = Vector3(1.2, 2.2, 0.1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_sortie"]
+font_size = 64
+font_color = Color(1, 1, 1, 1)
+
+[node name="Sortie" type="StaticBody3D"]
+script = ExtResource("1_sortie")
+
+[node name="Porte" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
+mesh = SubResource("BoxMesh_porte")
+
+[node name="Texte" type="Label3D" parent="."]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 1.7, -0.07)
+pixel_size = 0.004
+text = "SORTIE"
+label_settings = SubResource("LabelSettings_sortie")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
+shape = SubResource("BoxShape3D_porte")

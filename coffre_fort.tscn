@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=3]
+
+; Le coffre-fort : même script et même structure qu'un coffre ordinaire, mais
+; un autre modèle 3D — plus gros, en métal — et le badge à l'intérieur.
+; C'est sa seule différence visible, et elle doit suffire à le reconnaître du
+; premier coup d'œil dans la pénombre.
+
+[ext_resource type="Script" path="res://coffre.gd" id="1_coffre"]
+[ext_resource type="PackedScene" path="res://coffre_fort.glb" id="2_modele"]
+[ext_resource type="PackedScene" path="res://badge.glb" id="3_badge"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_fort"]
+size = Vector3(1.12, 0.714, 0.7)
+
+[node name="CoffreFort" type="StaticBody3D"]
+script = ExtResource("1_coffre")
+verrouille = true
+contient_badge = true
+
+[node name="Modele" parent="." instance=ExtResource("2_modele")]
+
+[node name="Morceau" parent="." instance=ExtResource("3_badge")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.357, 0)
+shape = SubResource("BoxShape3D_fort")

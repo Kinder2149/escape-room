@@ -1,0 +1,788 @@
+[gd_scene load_steps=31 format=3]
+
+; Le manoir est sculpté dans un bloc plein (CSG) : on creuse les pièces,
+; les couloirs, puis les ouvertures. Ce qui reste plein fait les murs.
+; Emprise : x de -11 à 23.6, z de -9 à 9. Hauteur sous plafond : 3.
+; L'aile Est (jet 7) : salle à manger et buanderie au nord, bibliothèque au
+; sud, desservies par le couloir prolongé et la GALERIE (le couloir du pignon
+; Est) — buanderie et bibliothèque ont deux portes : ce sont elles qui
+; referment les boucles permettant de semer le rôdeur en tournant.
+; La maison est CLOSE : aucune ouverture vers l'extérieur. La seule issue est la
+; porte rouge, que jeu.gd plaque contre un mur, à un endroit tiré au sort.
+; Les six pièces (scène Pièce, groupe « pieces ») portent les emplacements :
+; coffre, porte rouge, réveil. C'est la seule source de ces coordonnées —
+; le Jeu et le Rôdeur les interrogent ici.
+; Le mobilier vient de Blender (mobilier.glb) ; il est déjà positionné à l'export.
+; La carte de navigation (où le rôdeur peut marcher) est calculée au démarrage
+; par maison.gd : la géométrie CSG n'existe qu'une fois la scène chargée.
+; Les pièces restent HORS du nœud Navigation : leurs repères ne doivent pas
+; entrer dans le calcul de la carte.
+
+[ext_resource type="Script" path="res://maison.gd" id="1_maison"]
+[ext_resource type="PackedScene" path="res://mobilier.glb" id="2_mobilier"]
+[ext_resource type="PackedScene" path="res://piece.tscn" id="3_piece"]
+
+; agent_radius = 0,40 — et c'est un PLAFOND, pas un réglage libre (jet 11).
+; Le joueur passe partout où il y a 0,80 m (sa capsule fait 0,40 de rayon).
+; La navigation, elle, exige le double de cette marge. Au-delà de 0,40, tout
+; passage entre 0,80 m et deux fois la marge devient un endroit où le joueur
+; tient debout mais où le rôdeur n'a plus de sol : se plaquer là rendait
+; invincible. Essayé à 0,55, défaut constaté en jeu, ramené à 0,40.
+[sub_resource type="NavigationMesh" id="NavigationMesh_maison"]
+geometry_parsed_geometry_type = 1
+agent_radius = 0.4
+agent_height = 1.8
+agent_max_climb = 0.2
+cell_size = 0.15
+cell_height = 0.1
+
+[sub_resource type="Environment" id="Environment_maison"]
+background_mode = 1
+ambient_light_source = 2
+ambient_light_color = Color(0.7, 0.75, 0.9, 1)
+ambient_light_energy = 0.02
+
+; La masse du manoir — murs et plafonds. Une pierre sombre et légèrement
+; chaude plutôt que le gris de chantier d'origine : le décor doit reculer
+; pour laisser les sols de pièce et les objets manipulables trancher.
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gris"]
+albedo_color = Color(0.4, 0.38, 0.36, 1)
+roughness = 0.95
+
+; Les sols de circulation : une pierre neutre, ni colorée comme une pièce, ni
+; sombre comme un mur. C'est ce qui fait qu'un couloir se lit comme un couloir.
+[sub_resource type="StandardMaterial3D" id="Sol_Circulation"]
+albedo_color = Color(0.32, 0.31, 0.3, 1)
+roughness = 0.9
+
+[sub_resource type="PlaneMesh" id="Plan_CouloirRdc"]
+size = Vector2(31, 2.8)
+
+[sub_resource type="PlaneMesh" id="Plan_Galerie"]
+size = Vector2(3.2, 17.6)
+
+[sub_resource type="PlaneMesh" id="Plan_CouloirEtage"]
+size = Vector2(34.2, 2.8)
+
+[sub_resource type="PlaneMesh" id="Plan_PalierEst"]
+size = Vector2(3.4, 5.2)
+
+; ---- LES SOLS DE PIÈCE (jet 10, étape 2) ----
+; Une teinte par pièce, posée à 1 cm au-dessus du sol : de simples surfaces
+; sans épaisseur ni collision, hors du nœud Navigation pour ne pas entrer
+; dans le calcul de la carte. Les COULOIRS restent gris : c'est ce qui fait
+; qu'entrer dans une pièce se sent.
+; Teintes chaudes au rez-de-chaussée, froides à l'étage — on sent le niveau.
+
+[sub_resource type="PlaneMesh" id="Plan_66"]
+size = Vector2(6.6, 7.2)
+
+[sub_resource type="PlaneMesh" id="Plan_80"]
+size = Vector2(8, 7.2)
+
+[sub_resource type="PlaneMesh" id="Plan_54"]
+size = Vector2(5.4, 7.2)
+
+[sub_resource type="PlaneMesh" id="Plan_28"]
+size = Vector2(2.8, 7.2)
+
+[sub_resource type="PlaneMesh" id="Plan_86"]
+size = Vector2(8.6, 7.2)
+
+[sub_resource type="PlaneMesh" id="Plan_40"]
+size = Vector2(4, 7.2)
+
+[sub_resource type="StandardMaterial3D" id="Sol_Entree"]
+albedo_color = Color(0.42, 0.25, 0.18, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="Sol_Cuisine"]
+albedo_color = Color(0.26, 0.34, 0.2, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="Sol_Salon"]
+albedo_color = Color(0.38, 0.2, 0.24, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="Sol_Chambre"]
+albedo_color = Color(0.2, 0.24, 0.38, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="Sol_SalleDeBain"]
+albedo_color = Color(0.18, 0.34, 0.34, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="Sol_Bureau"]
+albedo_color = Color(0.34, 0.28, 0.16, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="Sol_SalleAManger"]
+albedo_color = Color(0.32, 0.2, 0.34, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="Sol_Buanderie"]
+albedo_color = Color(0.28, 0.32, 0.3, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="Sol_Bibliotheque"]
+albedo_color = Color(0.18, 0.3, 0.22, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="Sol_SalleDEau"]
+albedo_color = Color(0.22, 0.3, 0.36, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="Sol_ChambreAmis"]
+albedo_color = Color(0.28, 0.26, 0.36, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="Sol_ChambreMaitre"]
+albedo_color = Color(0.36, 0.22, 0.22, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="Sol_Dressing"]
+albedo_color = Color(0.36, 0.3, 0.18, 1)
+roughness = 0.9
+
+[node name="Maison" type="Node3D"]
+script = ExtResource("1_maison")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_maison")
+
+[node name="Navigation" type="NavigationRegion3D" parent="."]
+navigation_mesh = SubResource("NavigationMesh_maison")
+
+[node name="Batiment" type="CSGCombiner3D" parent="Navigation"]
+use_collision = true
+
+; Le bloc plein monte désormais sur DEUX niveaux (jet 8) : rez-de-chaussée
+; y 0→3, dalle 3→3.2, étage 3.2→6.2, toiture 6.2→6.4. Tout ce qui n'est pas
+; creusé à l'étage est encore plein : c'est la matière du jet 8.
+; Il déborde à l'est (x jusqu'à 27.2) pour loger la cage d'escalier.
+[node name="Masse" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.2, 3.1, 0)
+size = Vector3(42, 6.6, 18)
+material = SubResource("StandardMaterial3D_gris")
+
+[node name="VideEntree" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 1.5, -5.2)
+operation = 2
+size = Vector3(6.6, 3, 7.2)
+
+[node name="VidePieceNord2" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, 1.5, -5.2)
+operation = 2
+size = Vector3(6.6, 3, 7.2)
+
+[node name="VidePieceNord3" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.8, 1.5, -5.2)
+operation = 2
+size = Vector3(8, 3, 7.2)
+
+[node name="VideCouloir" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+operation = 2
+size = Vector3(21.6, 3, 2.8)
+
+[node name="VidePieceSud1" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 1.5, 5.2)
+operation = 2
+size = Vector3(6.6, 3, 7.2)
+
+[node name="VidePieceSud2" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, 1.5, 5.2)
+operation = 2
+size = Vector3(6.6, 3, 7.2)
+
+[node name="VidePieceSud3" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.8, 1.5, 5.2)
+operation = 2
+size = Vector3(8, 3, 7.2)
+
+[node name="PorteEntreeVersCouloir" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 1.1, -1.5)
+operation = 2
+size = Vector3(1.6, 2.2, 0.6)
+
+[node name="PorteNord2VersCouloir" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, 1.1, -1.5)
+operation = 2
+size = Vector3(1.6, 2.2, 0.6)
+
+[node name="PorteNord3VersCouloir" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.8, 1.1, -1.5)
+operation = 2
+size = Vector3(1.6, 2.2, 0.6)
+
+[node name="PorteSud1VersCouloir" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 1.1, 1.5)
+operation = 2
+size = Vector3(1.6, 2.2, 0.6)
+
+[node name="PorteSud2VersCouloir" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, 1.1, 1.5)
+operation = 2
+size = Vector3(1.6, 2.2, 0.6)
+
+[node name="PorteEntreeVersNord2" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.1, 1.1, -5.2)
+operation = 2
+size = Vector3(0.6, 2.2, 1.6)
+
+[node name="PorteSud2VersSud3" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.7, 1.1, 5.2)
+operation = 2
+size = Vector3(0.6, 2.2, 1.6)
+
+[node name="VideCouloirEst" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.4, 1.5, 0)
+operation = 2
+size = Vector3(9.6, 3, 2.8)
+
+[node name="VideGalerie" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.8, 1.5, 0)
+operation = 2
+size = Vector3(3.2, 3, 17.6)
+
+[node name="VideSalleAManger" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.9, 1.5, -5.2)
+operation = 2
+size = Vector3(5.4, 3, 7.2)
+
+[node name="VideBuanderie" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.4, 1.5, -5.2)
+operation = 2
+size = Vector3(2.8, 3, 7.2)
+
+[node name="VideBibliotheque" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.5, 1.5, 5.2)
+operation = 2
+size = Vector3(8.6, 3, 7.2)
+
+[node name="PorteSalleAMangerVersCouloir" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.9, 1.1, -1.5)
+operation = 2
+size = Vector3(1.6, 2.2, 0.6)
+
+[node name="PorteBuanderieVersCouloir" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.4, 1.1, -1.5)
+operation = 2
+size = Vector3(1.6, 2.2, 0.6)
+
+[node name="PorteBuanderieVersGalerie" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 1.1, -5.2)
+operation = 2
+size = Vector3(0.6, 2.2, 1.6)
+
+[node name="PorteBibliothequeVersCouloir" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.5, 1.1, 1.5)
+operation = 2
+size = Vector3(1.6, 2.2, 0.6)
+
+[node name="PorteBibliothequeVersGalerie" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 1.1, 5.2)
+operation = 2
+size = Vector3(0.6, 2.2, 1.6)
+
+; ---- L'ESCALIER EST (jet 8, étape 1) ----
+; La cage est creusée sur toute la hauteur (y 0→6.2) : c'est le trou par
+; lequel on passe d'un niveau à l'autre. La rampe y est ensuite REMPLIE
+; (union) — d'où sa place après les creusements, l'ordre compte en CSG.
+
+; La cage descend jusqu'à z=-8.8 pour ménager un vrai palier de départ à plat
+; devant la volée : on entre face à l'escalier, on ne l'aborde jamais par le
+; flanc. Sans ce recul, la porte tombait sur le côté de la rampe et on butait
+; contre ses 8 cm de bordure — infranchissables pour un corps qui marche.
+[node name="VideCageEscalierEst" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.3, 3.1, -3.15)
+operation = 2
+size = Vector3(3.4, 6.2, 11.3)
+
+[node name="PorteGalerieVersEscalier" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.5, 1.1, -8)
+operation = 2
+size = Vector3(0.6, 2.2, 1.6)
+
+; Le palier de l'étage : pour l'instant un simple débarras au-dessus de la
+; galerie, juste de quoi poser le pied. Les vraies pièces viennent à l'étape 2.
+[node name="VidePalierEst" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.7, 4.7, 1)
+operation = 2
+size = Vector3(3.4, 3, 5.2)
+
+[node name="PorteEscalierVersPalier" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.5, 4.3, 1.7)
+operation = 2
+size = Vector3(0.6, 2.2, 1.6)
+
+; La volée : une rampe pleine inclinée à 21,8° (3,2 m de montée sur 8 m).
+; Sa face haute va exactement de (z=-7, y=0) à (z=+1, y=3,2). Douce à dessein :
+; une pente trop raide et la carte de navigation refuse de monter.
+; ATTENTION — une rotation s'écrit ici EN LIGNES, pas en colonnes : écrite à
+; l'envers, la rampe descend au lieu de monter, et rien ne le montre à part
+; une carte de navigation trouée.
+; Elle est volontairement épaisse (4 m) : creuse, son dessous produisait un
+; plancher fantôme sous l'escalier, îlot que la navigation prenait pour du sol.
+[node name="Escalier" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 0.9285, 0.3714, 0, -0.3714, 0.9285, 25.3, -0.2572, -2.2572)
+size = Vector3(3.4, 4, 8.616)
+
+; Le palier d'arrivée, en haut de la volée : sans lui, on tomberait de 3,20 m.
+[node name="PalierHautEscalier" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.3, 1.6, 1.75)
+size = Vector3(3.4, 3.2, 1.5)
+
+; ---- L'ESCALIER OUEST (jet 8, étape 2) ----
+; Adossé à l'entrée, il ferme la boucle verticale : deux escaliers aux deux
+; bouts, pour qu'aucun rôdeur ne puisse condamner l'étage en campant l'unique
+; passage. Même géométrie que l'est, mêmes pièges évités : on entre face à la
+; volée, sur du plat, et la volée est pleine.
+
+[node name="VideCageEscalierOuest" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.9, 3.1, -3.65)
+operation = 2
+size = Vector3(3.4, 6.2, 10.3)
+
+; Élargies à 1,20 m comme TOUTES les autres portes du manoir (jet 11) :
+; à un mètre, elles étaient les seules à ne plus laisser passer la marge de
+; sécurité du pantin, et l'escalier ouest devenait injoignable.
+[node name="PorteEntreeVersEscalierOuest" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11, 1.1, -8)
+operation = 2
+size = Vector3(0.6, 2.2, 1.6)
+
+[node name="PorteEscalierOuestVersEtage" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11, 4.3, 0.6)
+operation = 2
+size = Vector3(0.6, 2.2, 1.6)
+
+; ---- L'ÉTAGE (jet 8, étape 2) ----
+; Plus petit que le rez-de-chaussée : quatre pièces, toutes au NORD d'un
+; couloir unique. Le sud reste plein. Le couloir relie les deux escaliers.
+
+[node name="VideCouloirEtage" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.3, 4.7, 0)
+operation = 2
+size = Vector3(34.2, 3, 2.8)
+
+[node name="VideSalleDEau" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 4.7, -5.2)
+operation = 2
+size = Vector3(6.6, 3, 7.2)
+
+[node name="VideChambreAmis" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, 4.7, -5.2)
+operation = 2
+size = Vector3(6.6, 3, 7.2)
+
+[node name="VideChambreMaitre" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.8, 4.7, -5.2)
+operation = 2
+size = Vector3(8, 3, 7.2)
+
+[node name="VideDressing" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 4.7, -5.2)
+operation = 2
+size = Vector3(4, 3, 7.2)
+
+[node name="PorteSalleDEauVersCouloir" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 4.3, -1.5)
+operation = 2
+size = Vector3(1.6, 2.2, 0.6)
+
+[node name="PorteChambreAmisVersCouloir" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, 4.3, -1.5)
+operation = 2
+size = Vector3(1.6, 2.2, 0.6)
+
+[node name="PorteChambreMaitreVersCouloir" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.8, 4.3, -1.5)
+operation = 2
+size = Vector3(1.6, 2.2, 0.6)
+
+[node name="PorteDressingVersCouloir" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 4.3, -1.5)
+operation = 2
+size = Vector3(1.6, 2.2, 0.6)
+
+; Une porte entre les deux chambres : la petite boucle de l'étage.
+[node name="PorteChambreAmisVersMaitre" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.7, 4.3, -5.2)
+operation = 2
+size = Vector3(0.6, 2.2, 1.6)
+
+[node name="EscalierOuest" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 0.9285, 0.3714, 0, -0.3714, 0.9285, -12.9, -0.2572, -3.2572)
+size = Vector3(3.4, 4, 8.616)
+
+[node name="PalierHautEscalierOuest" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.9, 1.6, 0.75)
+size = Vector3(3.4, 3.2, 1.5)
+
+[node name="LampeEntree" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 2.7, -5.2)
+light_energy = 0.015
+omni_range = 12.0
+
+[node name="LampeNord2" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, 2.7, -5.2)
+light_energy = 0.015
+omni_range = 12.0
+
+[node name="LampeNord3" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.8, 2.7, -5.2)
+light_energy = 0.015
+omni_range = 12.0
+
+[node name="LampeCouloirOuest" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 2.7, 0)
+light_energy = 0.015
+omni_range = 12.0
+
+[node name="LampeCouloirCentre" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.7, 0)
+light_energy = 0.015
+omni_range = 12.0
+
+[node name="LampeCouloirEst" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 2.7, 0)
+light_energy = 0.015
+omni_range = 12.0
+
+[node name="LampeSud1" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 2.7, 5.2)
+light_energy = 0.015
+omni_range = 12.0
+
+[node name="LampeSud2" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, 2.7, 5.2)
+light_energy = 0.015
+omni_range = 12.0
+
+[node name="LampeSud3" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.8, 2.7, 5.2)
+light_energy = 0.015
+omni_range = 12.0
+
+[node name="LampeCouloirAile" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.4, 2.7, 0)
+light_energy = 0.015
+omni_range = 12.0
+
+[node name="LampeGalerie" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.8, 2.7, 0)
+light_energy = 0.015
+omni_range = 12.0
+
+[node name="LampeSalleAManger" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.9, 2.7, -5.2)
+light_energy = 0.015
+omni_range = 12.0
+
+[node name="LampeBuanderie" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.4, 2.7, -5.2)
+light_energy = 0.015
+omni_range = 12.0
+
+[node name="LampeBibliotheque" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.5, 2.7, 5.2)
+light_energy = 0.015
+omni_range = 12.0
+
+[node name="LampeCageOuest" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.9, 2.7, -4)
+light_energy = 0.015
+omni_range = 12.0
+
+[node name="LampeCageEst" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.3, 2.7, -4)
+light_energy = 0.015
+omni_range = 12.0
+
+[node name="LampeEtageSalleDEau" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 5.9, -5.2)
+light_energy = 0.015
+omni_range = 12.0
+
+[node name="LampeEtageChambreAmis" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, 5.9, -5.2)
+light_energy = 0.015
+omni_range = 12.0
+
+[node name="LampeEtageChambreMaitre" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.8, 5.9, -5.2)
+light_energy = 0.015
+omni_range = 12.0
+
+[node name="LampeEtageDressing" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 5.9, -5.2)
+light_energy = 0.015
+omni_range = 12.0
+
+[node name="LampeEtageCouloirOuest" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 5.9, 0)
+light_energy = 0.015
+omni_range = 12.0
+
+[node name="LampeEtageCouloirCentre" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 5.9, 0)
+light_energy = 0.015
+omni_range = 12.0
+
+[node name="LampeEtageCouloirEst" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 5.9, 0)
+light_energy = 0.015
+omni_range = 12.0
+
+[node name="LampeEtagePalier" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.7, 5.9, 1)
+light_energy = 0.015
+omni_range = 12.0
+
+[node name="SolsDesPieces" type="Node3D" parent="."]
+
+[node name="SolEntree" type="MeshInstance3D" parent="SolsDesPieces"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 0.01, -5.2)
+mesh = SubResource("Plan_66")
+material_override = SubResource("Sol_Entree")
+
+[node name="SolCuisine" type="MeshInstance3D" parent="SolsDesPieces"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, 0.01, -5.2)
+mesh = SubResource("Plan_66")
+material_override = SubResource("Sol_Cuisine")
+
+[node name="SolSalon" type="MeshInstance3D" parent="SolsDesPieces"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.8, 0.01, -5.2)
+mesh = SubResource("Plan_80")
+material_override = SubResource("Sol_Salon")
+
+[node name="SolChambre" type="MeshInstance3D" parent="SolsDesPieces"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 0.01, 5.2)
+mesh = SubResource("Plan_66")
+material_override = SubResource("Sol_Chambre")
+
+[node name="SolSalleDeBain" type="MeshInstance3D" parent="SolsDesPieces"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, 0.01, 5.2)
+mesh = SubResource("Plan_66")
+material_override = SubResource("Sol_SalleDeBain")
+
+[node name="SolBureau" type="MeshInstance3D" parent="SolsDesPieces"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.8, 0.01, 5.2)
+mesh = SubResource("Plan_80")
+material_override = SubResource("Sol_Bureau")
+
+[node name="SolSalleAManger" type="MeshInstance3D" parent="SolsDesPieces"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.9, 0.01, -5.2)
+mesh = SubResource("Plan_54")
+material_override = SubResource("Sol_SalleAManger")
+
+[node name="SolBuanderie" type="MeshInstance3D" parent="SolsDesPieces"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.4, 0.01, -5.2)
+mesh = SubResource("Plan_28")
+material_override = SubResource("Sol_Buanderie")
+
+[node name="SolBibliotheque" type="MeshInstance3D" parent="SolsDesPieces"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.5, 0.01, 5.2)
+mesh = SubResource("Plan_86")
+material_override = SubResource("Sol_Bibliotheque")
+
+[node name="SolSalleDEau" type="MeshInstance3D" parent="SolsDesPieces"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 3.21, -5.2)
+mesh = SubResource("Plan_66")
+material_override = SubResource("Sol_SalleDEau")
+
+[node name="SolChambreAmis" type="MeshInstance3D" parent="SolsDesPieces"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, 3.21, -5.2)
+mesh = SubResource("Plan_66")
+material_override = SubResource("Sol_ChambreAmis")
+
+[node name="SolChambreMaitre" type="MeshInstance3D" parent="SolsDesPieces"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.8, 3.21, -5.2)
+mesh = SubResource("Plan_80")
+material_override = SubResource("Sol_ChambreMaitre")
+
+[node name="SolDressing" type="MeshInstance3D" parent="SolsDesPieces"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 3.21, -5.2)
+mesh = SubResource("Plan_40")
+material_override = SubResource("Sol_Dressing")
+
+; Les circulations : couloirs et galerie, en pierre neutre.
+[node name="SolCouloirRdc" type="MeshInstance3D" parent="SolsDesPieces"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.7, 0.01, 0)
+mesh = SubResource("Plan_CouloirRdc")
+material_override = SubResource("Sol_Circulation")
+
+[node name="SolGalerie" type="MeshInstance3D" parent="SolsDesPieces"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.8, 0.01, 0)
+mesh = SubResource("Plan_Galerie")
+material_override = SubResource("Sol_Circulation")
+
+[node name="SolCouloirEtage" type="MeshInstance3D" parent="SolsDesPieces"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.3, 3.21, 0)
+mesh = SubResource("Plan_CouloirEtage")
+material_override = SubResource("Sol_Circulation")
+
+[node name="SolPalierEst" type="MeshInstance3D" parent="SolsDesPieces"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.7, 3.21, 1)
+mesh = SubResource("Plan_PalierEst")
+material_override = SubResource("Sol_Circulation")
+
+[node name="Mobilier" parent="Navigation" instance=ExtResource("2_mobilier")]
+
+; Les six pièces : instances posées à l'origine, ce sont les repères qui
+; portent les coordonnées (position + orientation, reprises du jet 5).
+
+[node name="Entree" parent="." instance=ExtResource("3_piece")]
+
+[node name="Coffre" parent="Entree" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -7.5)
+
+; Déplacée sur le mur NORD au jet 8 : depuis que la cage d'escalier ouest est
+; adossée à l'entrée, son mur ouest n'est plus un mur extérieur — une porte
+; rouge y aurait donné sur l'escalier.
+[node name="Sortie" parent="Entree" index="1"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -7.5, 0, -8.75)
+
+[node name="Reveil" parent="Entree" index="2"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -7.5, 0, -5)
+
+[node name="Cuisine" parent="." instance=ExtResource("3_piece")]
+
+[node name="Coffre" parent="Cuisine" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, -7.5)
+
+[node name="Sortie" parent="Cuisine" index="1"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -2.8, 0, -8.75)
+
+[node name="Reveil" parent="Cuisine" index="2"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -1, 0, -3.5)
+
+[node name="Salon" parent="." instance=ExtResource("3_piece")]
+
+[node name="Coffre" parent="Salon" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.5, 0, -7.5)
+
+[node name="Sortie" parent="Salon" index="1"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 5, 0, -8.75)
+
+[node name="Reveil" parent="Salon" index="2"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 6.8, 0, -3)
+
+[node name="Chambre" parent="." instance=ExtResource("3_piece")]
+
+[node name="Coffre" parent="Chambre" index="0"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -9.8, 0, 4.5)
+
+[node name="Sortie" parent="Chambre" index="1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, 8.75)
+
+[node name="Reveil" parent="Chambre" index="2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, 4)
+
+[node name="SalleDeBain" parent="." instance=ExtResource("3_piece")]
+
+[node name="Coffre" parent="SalleDeBain" index="0"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 1, 0, 7.5)
+
+[node name="Sortie" parent="SalleDeBain" index="1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 8.75)
+
+[node name="Reveil" parent="SalleDeBain" index="2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 4)
+
+[node name="Bureau" parent="." instance=ExtResource("3_piece")]
+
+[node name="Coffre" parent="Bureau" index="0"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 8, 0, 7.5)
+
+[node name="Sortie" parent="Bureau" index="1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.8, 0, 8.75)
+
+[node name="Reveil" parent="Bureau" index="2"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 8.5, 0, 3.5)
+
+; Les trois pièces de l'aile Est (jet 7). Portes rouges plaquées aux murs
+; extérieurs (nord pour les deux pièces nord, sud pour la bibliothèque).
+
+[node name="SalleAManger" parent="." instance=ExtResource("3_piece")]
+
+[node name="Coffre" parent="SalleAManger" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.8, 0, -7.5)
+
+[node name="Sortie" parent="SalleAManger" index="1"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 13, 0, -8.75)
+
+[node name="Reveil" parent="SalleAManger" index="2"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 13.9, 0, -2.6)
+
+[node name="Buanderie" parent="." instance=ExtResource("3_piece")]
+
+[node name="Coffre" parent="Buanderie" index="0"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 17.6, 0, -3.5)
+
+[node name="Sortie" parent="Buanderie" index="1"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 18.4, 0, -8.75)
+
+[node name="Reveil" parent="Buanderie" index="2"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 18.4, 0, -6.5)
+
+[node name="Bibliotheque" parent="." instance=ExtResource("3_piece")]
+
+[node name="Coffre" parent="Bibliotheque" index="0"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 18.5, 0, 7.5)
+
+[node name="Sortie" parent="Bibliotheque" index="1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0, 8.75)
+
+[node name="Reveil" parent="Bibliotheque" index="2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 0, 3)
+
+; ---- LES QUATRE PIÈCES DE L'ÉTAGE (jet 8) ----
+; Leur repère « Sortie » est posé valide (mur nord, extérieur) mais n'est
+; JAMAIS tiré : la porte rouge reste de plain-pied. La règle se déduit de
+; l'altitude du repère de réveil — voir jeu.gd, aucune liste à tenir.
+
+[node name="SalleDEau" parent="." instance=ExtResource("3_piece")]
+
+[node name="Coffre" parent="SalleDEau" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.5, 3.2, -7.5)
+
+[node name="Sortie" parent="SalleDEau" index="1"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -7.5, 3.2, -8.75)
+
+[node name="Reveil" parent="SalleDEau" index="2"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -7.5, 3.2, -3)
+
+[node name="ChambreAmis" parent="." instance=ExtResource("3_piece")]
+
+[node name="Coffre" parent="ChambreAmis" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 3.2, -7.5)
+
+[node name="Sortie" parent="ChambreAmis" index="1"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -0.7, 3.2, -8.75)
+
+[node name="Reveil" parent="ChambreAmis" index="2"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -0.7, 3.2, -3)
+
+[node name="ChambreMaitre" parent="." instance=ExtResource("3_piece")]
+
+[node name="Coffre" parent="ChambreMaitre" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.5, 3.2, -7.5)
+
+[node name="Sortie" parent="ChambreMaitre" index="1"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 6.8, 3.2, -8.75)
+
+[node name="Reveil" parent="ChambreMaitre" index="2"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 6.8, 3.2, -3)
+
+[node name="Dressing" parent="." instance=ExtResource("3_piece")]
+
+[node name="Coffre" parent="Dressing" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 3.2, -7.5)
+
+[node name="Sortie" parent="Dressing" index="1"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 14, 3.2, -8.75)
+
+[node name="Reveil" parent="Dressing" index="2"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 14, 3.2, -3)
