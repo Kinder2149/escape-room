@@ -179,6 +179,33 @@ func _physics_process(delta: float) -> void:
 			commence_poursuite()
 
 	avance(delta, allure())
+	maj_demarche()
+
+
+## Sa démarche raconte ce qu'il fait : il marche en ronde, court après une
+## proie qu'il voit, et se fige à guetter quand il fouille une pièce.
+## Elle se lit sur sa vitesse réelle, pas sur son état : c'est la vitesse que
+## le joueur voit, et elle reste juste quel que soit le détour du code.
+const VITESSE_COURSE_MINI := 3.5
+const VITESSE_ARRET := 0.2
+
+func maj_demarche() -> void:
+	if animations == null:
+		return
+	var vitesse := Vector2(velocity.x, velocity.z).length()
+	var voulue := "Marche"
+	var cadence := 1.0
+	if vitesse < VITESSE_ARRET:
+		voulue = "Guet"
+	elif vitesse > VITESSE_COURSE_MINI:
+		voulue = "Course"
+		cadence = vitesse / VITESSE_POURSUITE
+	else:
+		# Le pas suit l'allure : sans ça il glisse au sol quand il traque.
+		cadence = clampf(vitesse / VITESSE_MARCHE, 0.6, 1.8)
+	if animations.current_animation != voulue:
+		animations.play(voulue)
+	animations.speed_scale = cadence
 
 
 ## Il ne court à fond que sur une proie qu'il voit — ou sur le meuble où il

@@ -31,8 +31,15 @@ transform = Transform3D(-0.9, 0, 0, 0, 0.9, 0, 0, 0, -0.9, 0, 0, 0)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
 shape = SubResource("CapsuleShape3D_rodeur")
 
+; La lanterne est portée DEVANT lui, à hauteur de tête (jet 11). Logée dans
+; son torse, elle était coupée par ses bras à chaque pas et le faisceau
+; clignotait. C'est à 1,44 m que son corps est le plus mince — il n'avance
+; que de 0,31 m là, contre 0,58 au niveau des bras : la lampe y passe devant
+; sans jamais être croisée.
+; Elle dépasse sa capsule de 9 cm : collé de face à un mur, le faisceau
+; s'éteindra brièvement. Compromis assumé.
 [node name="Torche" type="SpotLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, -0.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.44, -0.34)
 light_color = Color(1, 0.95, 0.82, 1)
 light_energy = 5.0
 shadow_enabled = true

@@ -38,7 +38,8 @@
 - La **porte rouge « SORTIE »** est plaquée contre un mur extérieur, **toujours de plain-pied**, dans une pièce tirée au sort. Elle se vise et s'ouvre avec **E**. Avec le badge : **« Gagné »**.
 
 ## Le rôdeur
-- **Un seul**, silhouette sombre avec une **torche** dont on voit la lumière arriver de loin.
+- **Deux**, un par niveau. Un **pantin de chiffon de 1,53 m** aux trois teintes sombres — corps presque noir, toile de sac sur la tête et les avant-bras, mains et orteils un peu plus clairs — portant une **lanterne devant lui, à hauteur de tête**, dont on voit la lumière arriver de loin.
+- **Sa démarche dit ce qu'il fait** (jet 11) : il **marche** en ronde, **court** après une proie qu'il voit, et se **fige à guetter** quand il fouille une pièce. Le pas suit l'allure, sans glisser au sol.
 - Il patrouille **au hasard, de pièce en pièce**, en marchant lentement, depuis une pièce de départ tirée au sort.
 - Il repère le joueur dans le **cône de sa torche** (jusqu'à **10 m**), **ou à moins de 2 m quel que soit l'angle**. Un mur, un plancher ou un meuble entre eux, et il ne voit rien.
 - **Le cône se mesure à plat** (arbitrage Kinder, jet 8 — « je descends d'un étage, il me lâche ») : mesuré en 3D, dévaler un escalier faisait sortir le joueur du cône en une seconde, et changer de niveau suffisait à semer n'importe qui. La hauteur reste bornée par la portée et par les murs.

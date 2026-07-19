@@ -225,6 +225,22 @@ Le jeu se joue en quatre temps — deux morceaux, le coffre-fort, le badge, la p
 
 ---
 
+# Jet 11 — Le rôdeur incarné *(clos le 16/07/2026)*
+
+Un pantin de chiffon animé (modèle Meshy, 24 os, 3 démarches) remplace la silhouette. **Dixième et onzième scènes** : `rodeur_incarne.tscn` cohabite avec l'ancienne `rodeur.tscn` — le même script accepte les deux, avec ou sans animations.
+
+**Ce que le jet a réglé, dans l'ordre où les défauts sont apparus :**
+1. Le modèle regardait à l'envers, ses animations ne bouclaient pas, ses quatre fichiers pesaient 6,5 Mo → un seul de 1,7 Mo, trois démarches.
+2. **Il traversait les chambranles.** Sa demi-largeur réelle est de 0,66 m (les os disaient 0,39 : la chair déborde toujours plus). Portes élargies à 1,60 m, pantin réduit à 1,53 m.
+3. **La marge de navigation est un plafond, pas un réglage.** Montée à 0,55 pour le recentrer, elle a rendu le joueur **invincible** dans tout passage entre 0,80 m et 1,10 m : il y tient debout, le rôdeur n'y a plus de sol. Ramenée à **0,40**, la valeur exacte où la navigation passe partout où le joueur passe. Débordement final : 19 cm au lieu de 30.
+4. **Il renonçait au premier battement de cils** — un chemin « terminé » n'est pas une arrivée quand la cible est hors carte. Et sa charge dépendait de son cône de vision : elle ne dépend plus que de la distance et d'une voie libre.
+5. **Sa lanterne clignotait** : logée dans son torse, ses bras la coupaient à chaque pas. Portée devant lui à 1,44 m — la hauteur où son corps est le plus mince. Zéro passage dans un mur sur une ronde complète.
+6. **Ses trois démarches** branchées sur ses trois allures.
+
+**Leçon du jet :** trois fois, une sonde a accusé le jeu à tort — un joueur téléporté dans un interstice où il ne peut pas marcher, un scan qui ignorait qu'une collision est une surface et non un volume, une cible posée dans un mur. **Vérifier d'abord si c'est l'outil qui ment.**
+
+---
+
 # Jet 10 — La couleur *(figé dans `BASE.md`)*
 
 ## Étape 1 — Les objets qu'on manipule *(faite — validée le 16/07/2026)*
