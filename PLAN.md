@@ -56,11 +56,23 @@ Sources 3D, dans `sources/` et à la racine :
 ## Le filet de sécurité — `verifier.bat`
 Un fichier à double-cliquer, à la racine. Il rejoue **dix-huit séries de contrôles** (le banc principal plus dix-sept sondes dans `verification/`) et rend un verdict unique. Le détail part dans `verification.log`.
 
-Il couvre : la vision et les neuf cachettes, l'audit des emplacements, quarante tirages et leurs garde-fous, les règles de l'étage, la chaîne d'objectifs complète, le coffre-fort, la géométrie de l'étage et de l'aile, les escaliers, les planques contre les murs, les deux rôdeurs et leurs niveaux, la poursuite dans les escaliers, la battue, l'extrapolation de fuite, les allures, les démarches et le glissement au réveil.
+Il couvre : la vision et les neuf cachettes, l'audit des emplacements, quarante tirages et leurs garde-fous, les règles de l'étage, la chaîne d'objectifs, le coffre-fort, la géométrie de l'étage et de l'aile, les escaliers, les planques contre les murs, les deux rôdeurs et leurs niveaux, la poursuite dans les escaliers, la battue, l'extrapolation de fuite, les allures, les démarches et le glissement au réveil.
 
-> **À lancer avant et après tout changement.** Fermer l'éditeur Godot pendant qu'il tourne.
->
-> *Leçon : le budget d'une sonde se compte en temps réel, jamais en images — leur débit dépend de la machine, et deux sondes rataient au hasard en rafale.*
+Et surtout, les trois séries qui jouent le jeu plutôt que ses règles :
+- **`partie`** — une partie **gagnée de bout en bout**, sans rien forcer : elle approche chaque objet, le vise avec le rayon du joueur, appuie sur la touche d'action. Elle **tourne autour** d'un objet jusqu'à trouver un angle qui accroche, comme un joueur le ferait ; si aucune approche ne marche, l'objet est vraiment inabordable.
+- **`controles`** — le joueur lui-même : avancer, être arrêté par un mur, rester au sol, se cacher, y avoir le regard bridé, ressortir.
+- **`defaite`** — attrapé : figé, annoncé, les deux rôdeurs arrêtés, une seconde capture sans effet.
+
+**Deux choses restent hors de portée du filet**, et c'est écrit dans les sondes plutôt que caché :
+- **La remise à zéro après « Attrapé »** — une sonde instancie le jeu à la main, elle n'est pas la scène principale ; « recharger la scène » n'y veut rien dire.
+- **La fluidité** — le banc tourne sans affichage, il n'y a rien à rendre. Seul un test à la main peut le dire.
+
+> **À lancer avant et après tout changement.** Fermer l'éditeur Godot pendant qu'il tourne, et **ne jamais en lancer deux en même temps** : les deux séries se disputent la machine, ralentissent tout et faussent le résultat.
+
+### Trois règles pour qu'une sonde reste digne de foi
+1. **Un budget se compte en temps réel, jamais en images.** Le débit d'images dépend de la machine et de sa charge : deux sondes rataient au hasard en rafale et passaient seules.
+2. **On vérifie une règle, pas un trajet.** Attendre qu'un rôdeur remonte physiquement 46 m d'escalier prenait une minute et cassait sous charge — alors que la règle (« il repart chez lui ») se lit instantanément dans sa destination.
+3. **Quand une sonde accuse, se demander d'abord si c'est elle qui ment.** Sur ce projet c'est arrivé plus souvent que l'inverse : un joueur téléporté là où aucun joueur ne peut marcher, un scan qui ignorait qu'une collision est une surface et non un volume, une porte abordée par l'arrière.
 
 ---
 

@@ -13,6 +13,10 @@ const PLANQUES := [
 
 var jeu: Node3D = null
 var frames := 0
+## Installe-t-on le scenario ? Un drapeau, jamais un numero d'image :
+## l'attente du manoir consomme des images, et sous charge on ratait
+## l'instant precis — la sonde mesurait alors une scene vide.
+var installe := false
 var essai := 0
 var echecs := 0
 var attrape := false
@@ -35,7 +39,8 @@ func _process(_d: float) -> bool:
 	var j: CharacterBody3D = jeu.get_node("Joueur")
 	frames += 1
 
-	if frames == 3:
+	if not installe:
+		installe = true
 		liste[1].actif = false
 		liste[1].global_position = Vector3(0, 40, 0)
 		for x in liste: x.joueur_attrape.disconnect(jeu._on_joueur_attrape)

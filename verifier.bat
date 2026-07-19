@@ -30,9 +30,12 @@ echo.
 
 if exist verification.log del verification.log
 
-echo === BANC PRINCIPAL === >> verification.log
-echo   - banc principal
-"%GODOT%" --headless --path . res://verification/banc.tscn >> verification.log 2>&1
+for %%T in (banc partie controles defaite) do (
+  echo   - %%T
+  echo.>> verification.log
+  echo === %%T === >> verification.log
+  "%GODOT%" --headless --path . res://verification/%%T.tscn >> verification.log 2>&1
+)
 
 for %%S in (audit depart regles_etage chaine coffre_fort etage escalier aile mur incarne demarches deux_rodeurs descente battue direction allure glissement) do (
   echo   - %%S

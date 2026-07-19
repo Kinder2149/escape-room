@@ -16,6 +16,7 @@ var vu_en_descendant := false
 var y_min := 99.0
 var battue_en_bas := false
 var remonte := false
+var rentre_juge := false
 ## Echeances en temps REEL (voir mur.gd).
 var echeance := 0
 
@@ -71,16 +72,30 @@ func _process(_delta: float) -> bool:
 	if phase == "battue":
 		if haut.en_battue and haut.niveau_battue < 1.5:
 			battue_en_bas = true
-		if not haut.en_battue and battue_en_bas and haut.global_position.y > 2.5:
-			remonte = true
-		if remonte or Time.get_ticks_msec() > echeance:
+		# On lit son INTENTION, pas son trajet : des que la battue est finie,
+		# sa ronde doit viser une piece de SON etage. Attendre qu'il ait
+		# physiquement remonte 46 m d'escalier prenait jusqu'a une minute et
+		# ratait des que la machine etait chargee — on testait la marche,
+		# pas la regle.
+		if not haut.en_battue and battue_en_bas and haut.piece_visee != "":
+			remonte = _piece_a_l_etage(haut.piece_visee)
+			rentre_juge = true
+		if rentre_juge or Time.get_ticks_msec() > echeance:
 			_exige("C) il ratisse EN BAS, la ou il l'a perdu (niveau=%.1f)"
 				% haut.niveau_battue, battue_en_bas)
-			_exige("D) puis il remonte chez lui (y=%.2f, ronde=%s)"
-				% [haut.global_position.y, haut.piece_visee], remonte)
+			_exige("D) puis il REPART CHEZ LUI : sa ronde vise « %s », a l'etage"
+				% haut.piece_visee, remonte)
 			return _fin()
 		return false
 
+	return false
+
+
+## Une pièce est-elle à l'étage ? On le lit sur l'altitude de son repère.
+func _piece_a_l_etage(nom: String) -> bool:
+	for p in get_nodes_in_group("pieces"):
+		if String(p.name) == nom:
+			return p.get_node("Reveil").global_position.y > 1.5
 	return false
 
 

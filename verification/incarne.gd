@@ -6,6 +6,10 @@ extends SceneTree
 
 var jeu: Node3D = null
 var frames := 0
+## Installe-t-on le scenario ? Un drapeau, jamais un numero d'image :
+## l'attente du manoir consomme des images, et sous charge on ratait
+## l'instant precis — la sonde mesurait alors une scene vide.
+var installe := false
 var echecs := 0
 var ecart_max := 0.0
 var deplacement := 0.0
@@ -26,7 +30,8 @@ func _process(_delta: float) -> bool:
 	var ancien: CharacterBody3D = liste[1]
 	frames += 1
 
-	if frames == 3:
+	if not installe:
+		installe = true
 		for r in liste:
 			r.joueur_attrape.disconnect(jeu._on_joueur_attrape)
 		jeu.get_node("Joueur").set_physics_process(false)

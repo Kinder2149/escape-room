@@ -66,20 +66,12 @@ func _ready() -> void:
 		await get_tree().physics_frame
 		controle("%s : on en ressort" % cachette.name, not joueur.est_cache())
 
-	# ---- Les coffres et la porte se visent toujours ----
-	# Le rôdeur est mis au repos et écarté : en ronde, il venait parfois se
-	# planter entre le joueur et le coffre et faisait échouer le contrôle une
-	# fois sur quatre. Un banc instable finit par ne plus être cru.
-	rodeur.actif = false
-	rodeur.global_position = Vector3(0.0, 0.0, 0.0)
-	# Le joueur ne doit rien traîner du test précédent : encore glissé dans un
-	# meuble, il ne vise plus rien et le contrôle échouerait sans rapport.
-	if joueur.est_cache():
-		joueur.sors_de_cachette()
-	await get_tree().physics_frame
-	await devant_coffre(jeu.get_node("CoffreA"))
-	controle("Le coffre se vise encore (« %s »)" % jeu.message_action.text,
-		await attendre_visee("Ouvrir"))
+	# La visée des coffres et de la porte n'est plus contrôlée ici : « partie »
+	# le fait bien mieux — les quatre objets, huit approches chacun, avec la
+	# vraie touche d'action et jusqu'à la victoire. Ce contrôle-ci ne tentait
+	# qu'une approche et ratait selon le tirage : rafistolé deux fois, retiré.
+	for r in get_tree().get_nodes_in_group("rodeurs"):
+		r.actif = false
 
 	# ---- Le même filet que le bandeau rouge de l'écran ----
 	var problemes: Array = jeu.get_node("Maison").audit_emplacements()
@@ -118,40 +110,6 @@ func devant_cachette(c: Node3D) -> void:
 	cam.look_at(c.global_position + Vector3.UP * 1.3, Vector3.UP)
 	for i in 5:
 		await get_tree().physics_frame
-
-
-## On pose le joueur, on le LAISSE RETOMBER, et seulement ensuite on vise :
-## calculée avant la chute, la visée partait d'une dizaine de centimètres trop
-## haut et passait par-dessus le couvercle une fois sur cinq. On vise le milieu
-## du coffre, pas son arête supérieure : la cible la plus indulgente.
-func devant_coffre(coffre: StaticBody3D) -> void:
-	var devant := coffre.global_transform.basis.z.normalized()
-	var c := coffre.global_position
-	var p := c + devant * 1.3
-	joueur.set_physics_process(true)
-	# L'altitude vient du coffre, pas d'une constante : depuis le jet 8 il est
-	# souvent à l'étage, et le joueur se retrouvait posé trois mètres dessous.
-	joueur.global_position = Vector3(p.x, c.y + 0.1, p.z)
-	joueur.rotation = Vector3.ZERO
-	var cam: Camera3D = joueur.get_node("Camera3D")
-	cam.rotation = Vector3.ZERO
-	for i in 10:
-		await get_tree().physics_frame
-	cam.look_at(c + devant * 0.2 + Vector3.UP * 0.25, Vector3.UP)
-	for i in 5:
-		await get_tree().physics_frame
-
-
-## Attend que la visée affiche le texte voulu, jusqu'à une demi-seconde.
-## Une seule image ne suffit pas : la visée se calcule dans la physique, et le
-## corps doit d'abord finir de retomber. On contrôle un état stabilisé, pas
-## une photographie — sinon le banc échoue une fois sur cinq sans rien dire.
-func attendre_visee(voulu: String) -> bool:
-	for i in 30:
-		if jeu.message_action.text == voulu:
-			return true
-		await get_tree().physics_frame
-	return false
 
 
 func agir() -> void:

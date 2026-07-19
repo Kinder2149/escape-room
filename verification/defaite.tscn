@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3]
+
+; La partie perdue : figé, annoncé, les rôdeurs arrêtés. Voir defaite.gd.
+
+[ext_resource type="Script" path="res://verification/defaite.gd" id="1_defaite"]
+
+[node name="Defaite" type="Node"]
+script = ExtResource("1_defaite")

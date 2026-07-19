@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3]
+
+; Une partie gagnée de bout en bout, jouée à la touche et à la visée.
+; Voir partie.gd.
+
+[ext_resource type="Script" path="res://verification/partie.gd" id="1_partie"]
+
+[node name="Partie" type="Node"]
+script = ExtResource("1_partie")
