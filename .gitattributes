@@ -1,2 +1,6 @@
 # Normalize EOL for all files that Git considers text files.
 * text=auto eol=lf
+
+# Les fichiers de commandes Windows DOIVENT garder des fins de ligne CRLF :
+# convertis en LF, cmd.exe les rend illisibles (il mange des caracteres).
+*.bat text eol=crlf
