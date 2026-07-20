@@ -18,7 +18,9 @@
 
 **Jet 5 — chaque partie est différente.** Six emplacements par type → le tirage au sort (sortie, coffres, réveil, rôdeur) → la porte d'entrée et son verrouillage supprimés, la maison devient close.
 
-Le jeu se gagne, se perd, se relance, et laisse le choix entre courir et attendre.
+Le jeu se gagne, se perd, et laisse le choix entre courir et attendre.
+
+> *Corrigé le 20/07/2026 : cette ligne disait « se relance ». C'était vrai de la défaite seule — **la victoire ne relançait rien**. Le jet 12 s'en occupe.*
 
 ---
 
@@ -37,7 +39,7 @@ Le jeu se gagne, se perd, se relance, et laisse le choix entre courir et attendr
 ---
 
 ## Structure Godot — actuelle
-**Neuf scènes de jeu**, sur un plafond de vingt, plus un outil :
+**Dix scènes de jeu**, sur un plafond de vingt, plus un outil *(compte vérifié le 20/07/2026 : le document en annonçait neuf, il en listait bien dix)* :
 - **Joueur** — corps, caméra, contrôles, visée, torche, état « caché ».
 - **Maison** — murs, couloirs, mobilier, pénombre, sols colorés par pièce, carte de navigation calculée et **vérifiée** au démarrage, audit des emplacements.
 - **Pièce** — le nom d'une pièce et ses trois repères (coffre, porte rouge, réveil) ; posée **treize fois** dans la Maison, seule source des emplacements.
@@ -54,7 +56,7 @@ Sources 3D, dans `sources/` et à la racine :
 - `sources/Meshy_AI_pixellabs_voodoo_doll_biped.zip` — **la seule source du pantin**, il n'est pas dans le fichier Blender. Voir `sources/LISEZMOI.md`.
 
 ## Le filet de sécurité — `verifier.bat`
-Un fichier à double-cliquer, à la racine. Il rejoue **dix-huit séries de contrôles** (le banc principal plus dix-sept sondes dans `verification/`) et rend un verdict unique. Le détail part dans `verification.log`.
+Un fichier à double-cliquer, à la racine. Il rejoue **vingt et une séries de contrôles** (quatre bancs — `banc`, `partie`, `controles`, `defaite` — plus dix-sept sondes dans `verification/`) et rend un verdict unique. Le détail part dans `verification.log`. *(Corrigé le 20/07/2026 : le document annonçait dix-huit séries, le fichier en lance vingt et une.)*
 
 Il couvre : la vision et les neuf cachettes, l'audit des emplacements, quarante tirages et leurs garde-fous, les règles de l'étage, la chaîne d'objectifs, le coffre-fort, la géométrie de l'étage et de l'aile, les escaliers, les planques contre les murs, les deux rôdeurs et leurs niveaux, la poursuite dans les escaliers, la battue, l'extrapolation de fuite, les allures, les démarches et le glissement au réveil.
 
@@ -65,6 +67,7 @@ Et surtout, les trois séries qui jouent le jeu plutôt que ses règles :
 
 **Deux choses restent hors de portée du filet**, et c'est écrit dans les sondes plutôt que caché :
 - **La remise à zéro après « Attrapé »** — une sonde instancie le jeu à la main, elle n'est pas la scène principale ; « recharger la scène » n'y veut rien dire.
+  > **Ce que cet angle mort cachait** *(trouvé le 20/07/2026)* : **la victoire ne relançait rien du tout.** On gagnait, tout se figeait, il fallait fermer la fenêtre. Le défaut vivait exactement là où le filet ne peut pas voir — et la limite était écrite ici depuis le début sans que personne aille regarder derrière. **Une limite connue d'un outil de contrôle est un endroit où il faut aller voir à la main, pas une case à cocher.** Réparé par le jet 12.
 - **La fluidité** — le banc tourne sans affichage, il n'y a rien à rendre. Seul un test à la main peut le dire.
 
 > **À lancer avant et après tout changement.** Fermer l'éditeur Godot pendant qu'il tourne, et **ne jamais en lancer deux en même temps** : les deux séries se disputent la machine, ralentissent tout et faussent le résultat.
@@ -292,3 +295,43 @@ Et le sol dit où l'on est : treize teintes de pièce, chaudes en bas, froides e
 **Ce que le jet a coûté :** aucune mécanique, aucune scène, aucun meuble déplacé. Uniquement des matériaux et treize surfaces sans collision.
 
 **Reste parqué de l'habillage :** les vraies textures (le mobilier n'a toujours aucune coordonnée de texture — un dépliage complet dans Blender). À ne prendre que si la palette ne suffit plus.
+
+---
+
+# Jet 12 — Le jeu dit ses règles *(figé dans `BASE.md`, 20/07/2026)*
+
+**Ce que ce jet n'est pas :** une réponse à la question ouverte. Le fil rouge reste pauvre après ce jet comme avant — le joueur comprendra ce qu'on attend de lui, le jeu n'aura toujours qu'un seul verbe. **On l'approfondira après** *(décision Kinder, 20/07/2026)*.
+
+**Le risque du jet, nommé d'avance :** on touche à la boucle de partie — le seul endroit du projet que le filet de vérification ne peut pas atteindre. Chaque étape se teste donc **à la main, en jouant**, et pas autrement.
+
+## Étape 1 — Le panneau au lancement *(faite — validée le 20/07/2026)*
+Le jeu s'ouvre sur le panneau d'accueil ; une touche entre dans le manoir. **Rien d'autre ne bouge** : la relance automatique après « Attrapé » reste en place.
+
+**La frontière qui protège le filet :** le panneau ne s'affiche que si le Jeu **est la scène principale**. Une sonde qui l'instancie à la main entre directement dans le manoir — sinon les 21 séries resteraient bloquées sur l'écran d'accueil pour l'éternité. C'est la même frontière que la relance, déjà déclarée hors de portée du filet. **Conséquence assumée : le panneau ne se teste qu'à la main.**
+
+**Les rôdeurs ne rondent qu'après la touche.** Sinon le joueur perdrait son avance pendant qu'il lit, et le garde-fou « les premières secondes lui appartiennent » (jet 6) ne voudrait plus rien dire. Pendant la lecture, la maison calcule sa carte de navigation en coulisse — du temps gagné.
+
+**Ce que le test manuel a corrigé, en deux passes :**
+1. **Les trois blocs de texte se chevauchaient** — titre par-dessus les lignes, début et fin coupés hors écran. Cause : chaque bloc était posé à une position fixe, calibrée à l'aveugle sur une résolution supposée. Remplacés par une **colonne qui se centre et s'espace seule** ; hauteur et largeur **mesurées** à quatre résolutions de 1024×576 à 1920×1080 au lieu d'être estimées.
+2. **« C'est lourd de tout lire »** — huit lignes de prose de même poids. La chaîne **se montre** désormais au lieu de se raconter (une ligne à flèches au lieu de trois phrases), et le panneau **emprunte le code couleur du jet 10** : doré = à ramasser, acier = coffre-fort, rouge = la sortie, cyan = un abri. Le panneau n'est plus seulement lisible, **il enseigne le code couleur avant qu'on entre** — ce que le jet 10 n'avait jamais fait.
+
+**Un défaut réel trouvé par Kinder à l'œil :** le losange du panneau et celui du jeu n'étaient **pas du même cyan**. Le panneau s'aligne sur le jeu (`#73e6ff`) — la teinte validée au jet 10 fait foi. *Un code couleur qui varie d'un écran à l'autre n'est plus un code.*
+
+**Reste à trancher un jour :** la ligne « appuie sur une touche pour entrer » est elle aussi en cyan, alors que le cyan est censé signifier « abri ». Signalé, non corrigé.
+
+**Ménage fait au passage** (voir plus bas) : les deux commentaires menteurs de `jeu.gd` et `cachette.gd`.
+
+## Étape 2 — Le panneau devient le point de passage *(à faire)*
+« Gagné » et « Attrapé » y ramènent tous les deux. La relance automatique disparaît. C'est l'étape qui répare la victoire qui ne relançait rien.
+
+**Test manuel :** je gagne → panneau → je relance. Je me fais attraper → panneau → je relance. **Cinq fois d'affilée sans fermer la fenêtre.**
+
+## Étape 3 — La ligne du réveil *(à faire)*
+« Sors de ce manoir » s'affiche quelques secondes au démarrage de la partie, puis s'efface d'elle-même. Le panneau se lit une fois ; cette ligne est ce qui reste quand la partie commence.
+
+**Test manuel :** dix parties — elle apparaît, elle s'efface, elle ne gêne ni la visée ni le compteur.
+
+## Ménage fait pendant l'étape 1 *(20/07/2026)*
+Deux commentaires mentaient, relevés à l'audit. Le jet 6 avait déclaré ce défaut soldé ; il était revenu. **Corrigés :**
+- L'en-tête de `jeu.gd` disait que la porte rouge s'ouvre « une fois les deux morceaux réunis » — c'est **le badge** depuis le jet 9.
+- `cachette.gd` parlait des « quatre meubles » et des « quatre cachettes » — il y en a **neuf**.

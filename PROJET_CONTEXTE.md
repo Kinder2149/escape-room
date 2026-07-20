@@ -17,7 +17,9 @@ La destination était **un manoir sur plusieurs niveaux avec des épreuves qui s
 - ✅ **B — l'étage et les rôdeurs par niveau** *(jet 8)* : 4 pièces de plus, deux escaliers en boucle verticale, **deux rôdeurs** — chacun chez lui, qui suit le joueur d'un étage à l'autre s'il le voit, et rentre s'il le perd.
 - ✅ **C — la chaîne d'objectifs** *(jet 9)* : deux morceaux → coffre-fort → badge → porte rouge.
 
-**Reste du cap d'origine, non construit : la cave.** Elle est prête à recevoir — les niveaux se déduisent de l'altitude des repères, il suffira d'ajouter un rôdeur dans la scène.
+**Reste du cap d'origine, non construit : la cave.** Elle est prête à recevoir — les niveaux se déduisent de l'altitude des repères, il suffira d'ajouter un rôdeur dans la scène. **Parquée le 20/07/2026 :** pas avant que le fil rouge ait un propos (voir la question ouverte).
+
+**En cours : le jet 12 — le jeu dit ses règles.** Le panneau d'accueil, point de passage de chaque partie. Voir `BASE.md` et `PLAN.md`.
 
 ## LA QUESTION OUVERTE — à trancher avant de construire quoi que ce soit
 *(constat de Kinder, 16/07/2026, après la remise en ordre)*
@@ -28,9 +30,26 @@ Deux directions possibles, **une seule à la fois** :
 - **La cave** — un troisième niveau, un rôdeur de plus. Ajoute de la surface.
 - **Le fil rouge** — enrichir la progression : plus d'étapes, des objets qui se répondent, une raison d'explorer chaque niveau.
 
-**Avis posé pour la prochaine session, à confirmer par un audit frais :** le fil rouge **avant** la cave. C'est le même raisonnement qui a fait passer la croissance avant l'habillage au jet 10 — *on n'ajoute pas de la surface avant ce qui lui donnera un sens*. Une cave posée sur le fil rouge actuel serait un troisième étage qu'on traverse sans raison.
+**TRANCHÉ le 20/07/2026, après l'audit de profondeur : le fil rouge, et la cave reste parquée.** Une cave posée aujourd'hui ajouterait quatre pièces interchangeables de plus à balayer, et un troisième rôdeur qui ignorerait les deux autres : 30 % de surface pour 0 % de propos.
 
-**Angle mort à retenir :** l'audit de remise en ordre a couvert la machinerie (fichiers, tests, documents, historique) mais **pas la profondeur du jeu**. Un projet peut être techniquement irréprochable et pauvre à jouer.
+**LA QUESTION RESTE OUVERTE SUR SON CONTENU** — *« on l'approfondira après »* (Kinder, 20/07/2026). Le jet 12 en cours ne la traite pas : il apprend ses règles au joueur, il ne donne pas de profondeur au jeu.
+
+### Ce que l'audit de profondeur a trouvé *(20/07/2026 — à relire avant d'ouvrir ce chantier)*
+
+Six constats, du plus lourd au plus léger. Le code confirme chacun.
+
+1. **On ne peut pas mourir en courant.** Joueur 4,5 ; rôdeur en poursuite 4,0, jamais plus. En ligne droite il ne rattrape **jamais**. C'est assumé dans `BASE.md` — mais la conséquence ne l'est pas : la mort n'arrive plus que par accident. **La difficulté n'est pas une pression, c'est une malchance.**
+2. **Les neuf cachettes sont facultatives.** Suite du point 1 : se cacher coûte du temps, le temps ne coûte rien. Qui a compris qu'il est le plus rapide n'entre jamais dans un meuble. Deux jets de travail que le jeu n'oblige jamais à utiliser.
+3. **Le fil rouge n'est pas court — il est aveugle.** Quatre maillons, ce n'est pas si peu. Mais **rien ne dit où quoi que ce soit se trouve** : on balaie treize pièces à la torche. Les messages du jeu disent *quoi*, jamais *où*. **Donc rallonger la chaîne ne ferait qu'allonger le balayage** — c'est le piège dans lequel « plus d'étapes » tomberait.
+4. **Les treize pièces sont interchangeables.** Chacune a sa couleur et ses meubles, mais mécaniquement : un emplacement de coffre, un réveil, un emplacement de porte, parfois une cachette. Aucune n'a d'usage propre. Seul le bureau a une identité de jeu — et c'est d'être un cul-de-sac, une identité subie.
+5. **Le tirage donne de la variété, pas de la rejouabilité.** Ce qui change : *où* sont les objets. Ce qui ne change jamais : *ce qu'on fait*.
+6. **Les deux rôdeurs s'ignorent totalement.** Aucun ne sait ce que l'autre a vu. C'est un rôdeur en double, jamais un étau.
+
+**En une phrase :** le jeu est techniquement solide et n'a **qu'un seul verbe — chercher**. Il ne demande jamais au joueur de décider quoi que ce soit. Un choix, c'est une option qui coûte quelque chose ; aujourd'hui rien ne coûte rien.
+
+**Angle mort à retenir :** l'audit de remise en ordre du 16/07 a couvert la machinerie (fichiers, tests, documents, historique) mais **pas la profondeur du jeu**. Un projet peut être techniquement irréprochable et pauvre à jouer.
+
+**Second angle mort, même famille :** le filet de vérification déclare lui-même deux zones qu'il ne couvre pas. Personne n'était allé voir derrière — la victoire ne relançait rien depuis toujours. **Une limite connue d'un outil de contrôle est un endroit où aller regarder à la main, pas une case à cocher.**
 
 ## La chaîne d'outils
 - **Blender** — fabrique les décors et les objets 3D. En vue première personne on ne voit pas le personnage, donc l'effort porte sur la maison, pas sur un héros. **Blender est entré dans le jeu** : tout le mobilier, les coffres, le morceau de clé et le badge en viennent. Les rôdeurs, eux, sont un pantin généré sur Meshy — sa source est dans `sources/`, pas dans le fichier Blender.

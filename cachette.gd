@@ -4,8 +4,8 @@ extends StaticBody3D
 ## qui décide, et le Joueur qui porte l'état « caché ».
 ##
 ## Repère local : la face qu'on vise regarde vers -Z.
-## Les quatre meubles n'ayant ni la même taille ni la même posture, tout se règle
-## ici plutôt que dans quatre scènes séparées.
+## Les neuf meubles n'ayant ni la même taille ni la même posture, tout se règle
+## ici plutôt que dans neuf scènes séparées.
 
 signal entree_demandee(cachette: Node3D)
 
@@ -63,7 +63,7 @@ func _process(_delta: float) -> void:
 	if joueur == null:
 		return
 	# Le repère ne s'allume qu'à courte distance : de plus loin, il trahirait
-	# les quatre cachettes d'un coup et tuerait la pénombre.
+	# les neuf cachettes d'un coup et tuerait la pénombre.
 	repere.visible = not occupee \
 		and global_position.distance_to(joueur.global_position) < DISTANCE_REPERE
 

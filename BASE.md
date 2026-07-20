@@ -14,7 +14,9 @@
 - **E** pour agir sur ce qu'on vise, à moins de **2 m**. Un mot à l'écran dit ce qu'on peut faire.
 
 ## La maison
-- **6 pièces + un couloir**, léger labyrinthe : entrée, cuisine, salon (au nord), chambre, salle de bain, bureau (au sud).
+- **13 pièces sur deux niveaux**, léger labyrinthe. *(Corrigé le 20/07/2026 : cette section décrivait encore le pavillon de 6 pièces des jets 1 à 5, contredit par les jets 7 et 8 plus bas dans ce même fichier.)*
+  - **Rez-de-chaussée, neuf pièces** : entrée, cuisine, salon, chambre, salle de bain, bureau, salle à manger, buanderie, bibliothèque — desservies par un couloir et une **galerie en boucle**.
+  - **Étage, quatre pièces** : chambre de maître, chambre d'amis, dressing, salle d'eau — un palier et un couloir court, **deux escaliers** aux deux extrémités.
 - Chaque pièce est identifiable par ses objets.
 - La maison est **close** : aucune ouverture vers l'extérieur. **La seule issue est la porte rouge.**
 - Le **bureau est un cul-de-sac** : sa seule porte donne sur la salle de bain, il n'ouvre pas sur le couloir.
@@ -32,7 +34,7 @@
 - **Le coffre-fort** — plus gros, en métal, dans une troisième pièce. Verrouillé, il **dit ce qu'il attend** (« il te manque N morceau(x) de clé ») et le compte suit à mesure qu'on ramasse. Avec les deux morceaux, il s'ouvre et libère le **badge** (une carte blanche).
 - **La porte rouge** n'exige **que le badge**. Sans lui : « Il te faut le badge, dans le coffre-fort ».
 - **Affichage** : « Morceaux de clé : X / 2 », puis **« Badge en poche »** — à partir de là une seule chose compte, l'écran ne dit plus que celle-là.
-- **Le jeu apprend son objectif au joueur** : ni le coffre-fort ni la porte ne se contentent de refuser, ils nomment l'étape suivante. C'est le seul « tutoriel » du jeu.
+- **Le coffre-fort et la porte nomment l'étape suivante** au lieu de se contenter de refuser. *(Depuis le jet 12, ce n'est plus le seul tutoriel du jeu : le panneau d'accueil énonce la chaîne d'avance. Ces deux messages restent, comme **rappel de progression**.)*
 
 ## La sortie
 - La **porte rouge « SORTIE »** est plaquée contre un mur extérieur, **toujours de plain-pied**, dans une pièce tirée au sort. Elle se vise et s'ouvre avec **E**. Avec le badge : **« Gagné »**.
@@ -79,6 +81,36 @@
 
 ---
 
+# Jet 12 — Le jeu dit ses règles *(figé le 20/07/2026 — en construction)*
+
+> Découpage dans `PLAN.md`. **Ce jet ne touche à la profondeur du jeu ni de près ni de loin** — voir « LA QUESTION OUVERTE » dans `PROJET_CONTEXTE.md`, qui reste ouverte.
+
+## Le principe : on n'apprend pas à jouer en tâtonnant dans le noir
+Le jeu ne dit **nulle part** quelles touches il faut appuyer. Personne d'autre que Kinder ne peut y jouer. Le losange cyan des cachettes s'allume sans s'expliquer : les neuf abris sont invisibles à qui ne sait pas ce qu'ils sont.
+
+**Les consignes se lisent avant d'entrer, pas sur les murs.** Des règles affichées dans le manoir poseraient la question de qui les a écrites, et surtout il ne faut pas avoir à *chercher* les règles dans la pénombre. Le panneau se lit hors du manoir ; le manoir, lui, reste sombre et muet.
+
+## Le panneau d'accueil
+Il énonce, dans cet ordre : **le but** (tu es enfermé, sors), **la chaîne** (deux morceaux → coffre-fort → badge → porte rouge), **les gestes** (ZQSD, souris, E), **le losange cyan** (un meuble où se glisser), **les deux rôdeurs** (ils te cherchent, ils t'attrapent).
+
+- **La chaîne est dite d'avance** *(arbitrage Kinder)* — ce qui révise le jet 9, voir plus bas.
+- **On ne dit PAS que les rôdeurs sont plus lents que le joueur.** Ils le sont (4,0 contre 4,5) et ne rattrapent jamais en ligne droite : c'est la stratégie qui viderait les neuf cachettes de leur utilité. Le joueur peut la découvrir ; le jeu ne la lui offre pas.
+
+## Le panneau est le point de passage de chaque partie *(arbitrage Kinder)*
+**Gagné et Attrapé y ramènent tous les deux**, et c'est de là qu'on relance.
+
+Cet arbitrage répare un défaut réel, découvert à l'audit du 20/07/2026 : **quand on gagnait, le jeu ne se relançait pas du tout.** « Gagné » s'affichait, le joueur était figé, et il fallait fermer la fenêtre. `PLAN.md` affirmait pourtant que le jeu « se gagne, se perd et se relance » depuis les jets 1 à 5. Aucune des 21 séries de contrôles ne pouvait le voir : les sondes instancient le jeu à la main, la relance leur échappe **par construction** — une limite déjà écrite dans `PLAN.md`, jamais allée voir.
+
+La relance automatique après « Attrapé » disparaît par la même occasion : elle décidait à la place du joueur.
+
+## Ce qui ne change pas
+Les rôdeurs, leurs vitesses, leurs règles de vision, les battues, les neuf cachettes, les six garde-fous du tirage, la règle de l'étage, la porte de plain-pied, la chaîne elle-même. **Aucun chiffre d'équilibrage n'est touché. Aucune scène nouvelle** : tout vit dans l'interface qui existe déjà — on reste à **dix scènes sur vingt**.
+
+## Definition of done (jet 12)
+Un joueur **qui n'est pas Kinder** lance le jeu, comprend quoi faire sans qu'on lui explique, joue, gagne ou perd, et relance — **sans jamais fermer la fenêtre**. Les 21 séries de contrôles restent vertes.
+
+---
+
 # Jet 10 — La couleur *(clos le 16/07/2026)*
 
 > Découpage dans `PLAN.md`.
@@ -104,6 +136,8 @@ Sur une partie : on reconnaît un coffre d'un meuble au premier balayage de torc
 **Deux morceaux de clé → le coffre-fort → le badge → la porte rouge.**
 
 Le gain n'est pas la longueur : c'est que **le jeu apprend son objectif au joueur**. Tombé sur le coffre-fort verrouillé, il comprend ce qu'on attend de lui sans qu'on le lui explique. C'est le premier objet du jeu qui parle.
+
+> **Révisé au jet 12** *(arbitrage Kinder, 20/07/2026)* : le panneau d'accueil énonce la chaîne avant la partie. Le coffre-fort et la porte ne l'**enseignent** donc plus, ils la **rappellent**. Le reste du jet 9 est intact.
 
 - **Le coffre-fort** — verrouillé, visuellement distinct. Visé sans les deux morceaux : *« Verrouillé — il te manque N morceau(x) de clé »*. Avec les deux, il s'ouvre et libère le badge. Comme la porte rouge, **il ne décide pas lui-même** : il signale qu'on a essayé, le Jeu sait ce que le joueur détient.
 - **Le badge** — se ramasse comme un morceau. L'affichage passe de « Morceaux de clé : X / 2 » à **« Badge en poche »**.

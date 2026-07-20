@@ -1,9 +1,11 @@
 extends Node3D
 
-## Gestionnaire de la partie : tirage au sort de la distribution à chaque
-## lancement (porte rouge, coffres, réveil du joueur, départ du rôdeur),
-## décompte des morceaux de clé, et ouverture de la porte rouge une fois
-## les deux morceaux réunis. Attrapé → tout repart à zéro, nouveau tirage.
+## Gestionnaire de la partie : panneau d'accueil, tirage au sort de la
+## distribution à chaque lancement (porte rouge, coffres, réveil du joueur,
+## départ des rôdeurs), décompte des morceaux de clé, et ouverture de la porte
+## rouge à qui détient le BADGE — pas les morceaux : ils n'ouvrent que le
+## coffre-fort, qui contient le badge (chaîne du jet 9).
+## Attrapé → tout repart à zéro, nouveau tirage.
 ##
 ## Les pièces et leurs emplacements vivent dans la maison (scène Pièce,
 ## groupe « pieces ») : ici on tire et on pose, on ne connaît aucune coordonnée.
@@ -29,6 +31,10 @@ const DUREE_AVANT_RELANCE := 2.0
 @onready var compteur: Label = $Interface/Compteur
 @onready var fente: Control = $Interface/Fente
 @onready var message_audit: Label = $Interface/MessageAudit
+@onready var panneau: ColorRect = $Interface/Panneau
+
+## Émis quand le joueur appuie sur une touche devant le panneau d'accueil.
+signal entree_demandee_au_panneau
 
 var partie_gagnee := false
 var partie_perdue := false
@@ -38,6 +44,10 @@ var badge := false
 var minuteur_refus: Tween = null
 ## La pièce du réveil, retenue entre le tirage et la pose du rôdeur.
 var piece_reveil: Node3D = null
+## Une touche a-t-elle déjà été pressée devant le panneau ? Le drapeau double
+## le signal : sans lui, un joueur plus rapide que la carte de navigation
+## verrait sa touche tomber dans le vide et resterait bloqué sur le panneau.
+var touche_recue := false
 
 
 func _ready() -> void:
@@ -47,7 +57,18 @@ func _ready() -> void:
 	message_refus.text = ""
 	message_audit.hide()
 	fente.hide()
+	panneau.hide()
 	maj_compteur()
+
+	# LE PANNEAU D'ACCUEIL n'appartient qu'à la vraie partie. Une sonde de
+	# vérification instancie le jeu à la main : elle n'est pas la scène
+	# principale, et personne ne peut appuyer sur une touche pour elle — elle
+	# entre donc directement dans le manoir. C'est la même frontière que la
+	# relance, déjà déclarée hors de portée du filet dans PLAN.md.
+	# Conséquence assumée : le panneau ne se teste qu'à la main.
+	var avec_panneau := get_tree().current_scene == self
+	if avec_panneau:
+		ouvre_le_panneau()
 
 	tire_au_sort()
 
@@ -68,12 +89,55 @@ func _ready() -> void:
 	# Les rôdeurs ne peuvent ni vérifier une ligne de vue ni chercher leur
 	# chemin avant que la maison ait ses murs et sa carte.
 	await $Maison.navigation_prete
+
+	# Le manoir attend derrière le panneau : les rôdeurs ne rondent pas encore.
+	# Sans ça, le joueur perdrait son avance pendant qu'il lit — et le garde-fou
+	# « les premières secondes lui appartiennent » ne voudrait plus rien dire.
+	if avec_panneau:
+		if not touche_recue:
+			await entree_demandee_au_panneau
+		entre_dans_le_manoir()
+
+	# L'audit après le panneau, jamais avant : sous le panneau, le bandeau
+	# rouge naîtrait caché et personne ne le verrait.
 	affiche_audit()
 	lance_les_rodeurs()
 
 
 func rodeurs() -> Array:
 	return get_tree().get_nodes_in_group("rodeurs")
+
+
+## Le panneau s'ouvre avant tout le reste : le joueur ne doit pas apercevoir
+## le manoir une fraction de seconde avant d'avoir lu les règles.
+## Le joueur est figé comme il l'est à la victoire — souris rendue, pour lire
+## sans que le moindre mouvement fasse tourner la tête.
+func ouvre_le_panneau() -> void:
+	panneau.show()
+	fige_joueur()
+
+
+## Une touche, et on entre. Le joueur retrouve ses commandes et la souris.
+func entre_dans_le_manoir() -> void:
+	panneau.hide()
+	var joueur: CharacterBody3D = $Joueur
+	joueur.set_physics_process(true)
+	joueur.set_process_unhandled_input(true)
+	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+
+
+## Devant le panneau, n'importe quelle touche entre dans le manoir — c'est ce
+## que le panneau promet. Le joueur ne lit plus ses propres commandes tant
+## qu'il est ouvert : cet événement arrive donc toujours jusqu'ici.
+func _unhandled_input(evenement: InputEvent) -> void:
+	if not panneau.visible or touche_recue:
+		return
+	var appui: bool = (evenement is InputEventKey and evenement.pressed \
+			and not evenement.echo) \
+		or (evenement is InputEventMouseButton and evenement.pressed)
+	if appui:
+		touche_recue = true
+		entree_demandee_au_panneau.emit()
 
 
 ## Un rôdeur par niveau : chacun ronde chez lui, et y rentre après avoir
