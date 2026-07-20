@@ -21,8 +21,10 @@ const DISTANCE_DEPART_MIN := 9.0
 ## cave en héritera sans qu'on touche à quoi que ce soit.
 const HAUTEUR_PLAIN_PIED := 1.0
 const DUREE_REFUS := 2.5
-## Le temps de lire « Attrapé » avant que tout ne reparte à zéro.
-const DUREE_AVANT_RELANCE := 2.0
+## Le temps de lire la fin de partie avant que le panneau d'accueil ne revienne.
+## Une victoire se savoure un peu plus longtemps qu'une capture.
+const DUREE_LECTURE_ATTRAPE := 2.0
+const DUREE_LECTURE_GAGNE := 3.0
 
 @onready var message_gagne: Label = $Interface/MessageGagne
 @onready var message_perdu: Label = $Interface/MessagePerdu
@@ -60,13 +62,7 @@ func _ready() -> void:
 	panneau.hide()
 	maj_compteur()
 
-	# LE PANNEAU D'ACCUEIL n'appartient qu'à la vraie partie. Une sonde de
-	# vérification instancie le jeu à la main : elle n'est pas la scène
-	# principale, et personne ne peut appuyer sur une touche pour elle — elle
-	# entre donc directement dans le manoir. C'est la même frontière que la
-	# relance, déjà déclarée hors de portée du filet dans PLAN.md.
-	# Conséquence assumée : le panneau ne se teste qu'à la main.
-	var avec_panneau := get_tree().current_scene == self
+	var avec_panneau := est_la_vraie_partie()
 	if avec_panneau:
 		ouvre_le_panneau()
 
@@ -106,6 +102,27 @@ func _ready() -> void:
 
 func rodeurs() -> Array:
 	return get_tree().get_nodes_in_group("rodeurs")
+
+
+## Sommes-nous la vraie partie, ou une sonde nous a-t-elle instanciés à la main ?
+## LE PANNEAU ET LA RELANCE en dépendent tous les deux, et pour la même raison :
+## une sonde n'a personne pour appuyer sur une touche, et « recharger la scène »
+## y rechargerait la SIENNE, pas le manoir. C'est la frontière que PLAN.md
+## déclare depuis toujours hors de portée du filet.
+## Conséquence assumée : ni le panneau ni la relance ne se testent autrement
+## qu'à la main.
+func est_la_vraie_partie() -> bool:
+	return get_tree().current_scene == self
+
+
+## Fin de partie, gagnée ou perdue : le message s'affiche le temps d'être lu,
+## puis tout revient au panneau d'accueil. C'est de là qu'on relance — le
+## joueur reprend la main au lieu d'être renvoyé en jeu sans avoir rien demandé.
+func retour_au_panneau(duree_de_lecture: float) -> void:
+	if not est_la_vraie_partie():
+		return
+	await get_tree().create_timer(duree_de_lecture).timeout
+	get_tree().reload_current_scene()
 
 
 ## Le panneau s'ouvre avant tout le reste : le joueur ne doit pas apercevoir
@@ -339,9 +356,9 @@ func _on_joueur_attrape() -> void:
 	for rodeur in rodeurs():
 		rodeur.actif = false
 
-	# Tout repart à zéro : coffres refermés, morceaux perdus, nouveau tirage.
-	await get_tree().create_timer(DUREE_AVANT_RELANCE).timeout
-	get_tree().reload_current_scene()
+	# Le temps de lire « Attrapé », puis retour au panneau : coffres refermés,
+	# morceaux perdus, nouveau tirage — et c'est le joueur qui décide quand.
+	retour_au_panneau(DUREE_LECTURE_ATTRAPE)
 
 
 func fige_joueur() -> void:
@@ -395,6 +412,10 @@ func annonce_refus(texte: String) -> void:
 	minuteur_refus.tween_callback(func() -> void: message_refus.text = "")
 
 
+## Gagner ramène au panneau, exactement comme se faire attraper. Jusqu'au jet 12
+## la victoire ne relançait RIEN : l'écran se figeait sur « Gagné » et il fallait
+## fermer la fenêtre. Le défaut vivait dans la zone que le filet ne peut pas
+## voir — et PLAN.md le déclarait sans que personne aille regarder derrière.
 func gagne() -> void:
 	partie_gagnee = true
 	$Sortie.ouverte = true
@@ -404,3 +425,6 @@ func gagne() -> void:
 	fige_joueur()
 	for rodeur in rodeurs():
 		rodeur.actif = false
+
+	# Une victoire se savoure un peu plus longtemps qu'une capture.
+	retour_au_panneau(DUREE_LECTURE_GAGNE)

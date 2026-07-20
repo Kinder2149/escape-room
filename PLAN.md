@@ -321,10 +321,14 @@ Le jeu s'ouvre sur le panneau d'accueil ; une touche entre dans le manoir. **Rie
 
 **Ménage fait au passage** (voir plus bas) : les deux commentaires menteurs de `jeu.gd` et `cachette.gd`.
 
-## Étape 2 — Le panneau devient le point de passage *(à faire)*
-« Gagné » et « Attrapé » y ramènent tous les deux. La relance automatique disparaît. C'est l'étape qui répare la victoire qui ne relançait rien.
+## Étape 2 — Le panneau devient le point de passage *(faite — validée le 20/07/2026)*
+« Gagné » et « Attrapé » y ramènent tous les deux. Le message de fin s'affiche le temps d'être lu — **2 s pour une capture, 3 s pour une victoire**, une victoire se savoure — puis le panneau revient et **c'est le joueur qui décide quand relancer**. La relance qui renvoyait en partie toute seule au bout de deux secondes a disparu : elle décidait à sa place.
 
-**Test manuel :** je gagne → panneau → je relance. Je me fais attraper → panneau → je relance. **Cinq fois d'affilée sans fermer la fenêtre.**
+**Le défaut réparé :** jusqu'ici **la victoire ne relançait rien**. L'écran se figeait sur « Gagné » et il fallait fermer la fenêtre.
+
+**Une bombe désamorcée au passage.** La sonde `defaite` déclenche une capture sur un jeu qu'elle a instancié à la main ; l'ancien code enchaînait sur « recharger la scène », ce qui aurait rechargé **sa propre scène de test**. Elle y échappait uniquement parce qu'elle terminait avant la fin des deux secondes d'attente — **ça marchait par chance de timing**, comme la carte de navigation avant le jet 6.
+
+La frontière « suis-je la vraie partie, ou une sonde m'a-t-elle instancié ? » est désormais écrite **une seule fois** (`est_la_vraie_partie`) et sert au panneau comme à la relance. Aucune sonde ne peut plus tomber dedans, quel que soit son rythme. *Une information ne doit vivre qu'à un seul endroit — la leçon du jet 6, appliquée à une frontière plutôt qu'à une donnée.*
 
 ## Étape 3 — La ligne du réveil *(à faire)*
 « Sors de ce manoir » s'affiche quelques secondes au démarrage de la partie, puis s'efface d'elle-même. Le panneau se lit une fois ; cette ligne est ce qui reste quand la partie commence.
