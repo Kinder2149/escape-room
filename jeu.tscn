@@ -43,6 +43,12 @@ font_color = Color(0.94, 0.93, 0.91, 1)
 font_size = 18
 font_color = Color(0.37, 0.8, 0.84, 1)
 
+[sub_resource type="LabelSettings" id="LabelSettings_reveil"]
+font_size = 32
+font_color = Color(0.94, 0.93, 0.91, 1)
+outline_size = 8
+outline_color = Color(0, 0, 0, 0.85)
+
 [sub_resource type="LabelSettings" id="LabelSettings_audit"]
 font_size = 26
 font_color = Color(1, 0.25, 0.2, 1)
@@ -267,6 +273,22 @@ offset_top = 64.0
 grow_horizontal = 2
 label_settings = SubResource("LabelSettings_audit")
 horizontal_alignment = 1
+
+; LA LIGNE DU RÉVEIL (jet 12). Le panneau se lit une fois ; cette ligne est ce
+; qui reste quand le joueur est lâché dans le noir. Elle se place au-dessus du
+; centre pour ne pas masquer ce qu'on regarde, et s'efface en fondu au bout de
+; quelques secondes — sans jamais demander qu'on s'en occupe.
+[node name="MessageReveil" type="Label" parent="Interface"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -170.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Sors de ce manoir"
+label_settings = SubResource("LabelSettings_reveil")
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="MessageRefus" type="Label" parent="Interface"]
 anchors_preset = 15

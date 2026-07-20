@@ -330,10 +330,31 @@ Le jeu s'ouvre sur le panneau d'accueil ; une touche entre dans le manoir. **Rie
 
 La frontière « suis-je la vraie partie, ou une sonde m'a-t-elle instancié ? » est désormais écrite **une seule fois** (`est_la_vraie_partie`) et sert au panneau comme à la relance. Aucune sonde ne peut plus tomber dedans, quel que soit son rythme. *Une information ne doit vivre qu'à un seul endroit — la leçon du jet 6, appliquée à une frontière plutôt qu'à une donnée.*
 
-## Étape 3 — La ligne du réveil *(à faire)*
-« Sors de ce manoir » s'affiche quelques secondes au démarrage de la partie, puis s'efface d'elle-même. Le panneau se lit une fois ; cette ligne est ce qui reste quand la partie commence.
+## Étape 3 — La ligne du réveil *(faite — validée le 20/07/2026)*
+« Sors de ce manoir » s'affiche au moment exact où le joueur reprend la main — pas au chargement. Quatre secondes, puis un fondu d'une seconde.
 
-**Test manuel :** dix parties — elle apparaît, elle s'efface, elle ne gêne ni la visée ni le compteur.
+Deux choix de détail, tous deux visibles :
+- **Au-dessus du centre**, jamais en plein milieu : au centre elle masquerait précisément ce qu'on regarde en découvrant la pièce du réveil.
+- **En fondu, pas d'un coup** : un texte qui s'éteint sèchement accroche l'œil au moment même où il disparaît — c'est-à-dire pile quand le joueur commence à explorer. Un fondu ne se remarque pas, et c'est le but.
+
+---
+
+## Fin du jet 12 — LE JEU S'EXPLIQUE *(20/07/2026)*
+Le manoir dit ses règles, et **n'importe qui peut y jouer** : jusqu'à aujourd'hui le jeu n'indiquait nulle part quelles touches appuyer.
+
+**Ce que le jet a coûté :** aucune scène nouvelle (toujours **dix sur vingt**), aucune règle de jeu touchée, aucun chiffre d'équilibrage modifié, aucun document nouveau.
+
+**Ce qu'il a rapporté au-delà de son objet :**
+- **Le panneau enseigne le code couleur du jet 10** avant qu'on entre — doré à ramasser, acier le coffre-fort, rouge la sortie, cyan un abri. Le jet 10 avait construit ce langage sans jamais l'apprendre à personne.
+- **La victoire relance enfin.** Défaut vieux des jets 1 à 5, affirmé résolu par ce document, invisible au filet par construction.
+- **Une bombe désamorcée** dans la sonde `defaite`, qui n'échappait au rechargement de sa propre scène que par chance de timing.
+- **Six mensonges de documents et de commentaires corrigés.**
+
+**Les deux leçons du jet :**
+1. **Une limite qu'un outil de contrôle avoue est un endroit où aller regarder à la main, pas une case à cocher.** La victoire qui ne relançait rien vivait là depuis toujours, derrière une phrase écrite noir sur blanc que personne n'avait suivie.
+2. **Un « tout est vert » se vérifie sur quatre chiffres, pas un.** Lancer deux séries en même temps a produit un log troué — cinq séries en double, six absentes — qui annonçait fièrement zéro raté. Contrôler désormais : **21 séries, 21 verdicts, 0 raté, aucun doublon.**
+
+**Ce que ce jet ne règle PAS, et c'est écrit exprès :** la profondeur du jeu. Le joueur comprend maintenant ce qu'on attend de lui — le jeu n'a toujours qu'un seul verbe. **La question ouverte reste ouverte** (voir `PROJET_CONTEXTE.md`).
 
 ## Ménage fait pendant l'étape 1 *(20/07/2026)*
 Deux commentaires mentaient, relevés à l'audit. Le jet 6 avait déclaré ce défaut soldé ; il était revenu. **Corrigés :**

@@ -9,6 +9,12 @@
 
 > L'état réel du jeu aujourd'hui, vérifié dans le code. Ces décisions ne se rediscutent pas : elles sont construites.
 
+## Le panneau d'accueil *(jet 12)*
+- **Le jeu s'ouvre sur un panneau** qui énonce le but, la chaîne des objets, les commandes, les abris et les rôdeurs. Une touche entre dans le manoir.
+- **Il est le point de passage de chaque partie** : « Gagné » et « Attrapé » y ramènent tous les deux, après le temps de lire. C'est de là qu'on relance.
+- **Les rôdeurs ne rondent qu'après la touche** — sinon le joueur perdrait pendant sa lecture l'avance que le tirage lui garantit.
+- **Au réveil**, une ligne rappelle le but quelques secondes, puis s'efface en fondu.
+
 ## Vue et contrôles
 - **Vue première personne**, sur **PC**. Déplacement au clavier (**ZQSD**), regard à la souris.
 - **E** pour agir sur ce qu'on vise, à moins de **2 m**. Un mot à l'écran dit ce qu'on peut faire.
@@ -81,7 +87,7 @@
 
 ---
 
-# Jet 12 — Le jeu dit ses règles *(figé le 20/07/2026 — en construction)*
+# Jet 12 — Le jeu dit ses règles *(clos le 20/07/2026)*
 
 > Découpage dans `PLAN.md`. **Ce jet ne touche à la profondeur du jeu ni de près ni de loin** — voir « LA QUESTION OUVERTE » dans `PROJET_CONTEXTE.md`, qui reste ouverte.
 

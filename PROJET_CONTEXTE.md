@@ -19,7 +19,7 @@ La destination était **un manoir sur plusieurs niveaux avec des épreuves qui s
 
 **Reste du cap d'origine, non construit : la cave.** Elle est prête à recevoir — les niveaux se déduisent de l'altitude des repères, il suffira d'ajouter un rôdeur dans la scène. **Parquée le 20/07/2026 :** pas avant que le fil rouge ait un propos (voir la question ouverte).
 
-**En cours : le jet 12 — le jeu dit ses règles.** Le panneau d'accueil, point de passage de chaque partie. Voir `BASE.md` et `PLAN.md`.
+**Jet 12 clos le 20/07/2026 — le jeu dit ses règles.** Le panneau d'accueil énonce le but, la chaîne, les commandes et les abris, et devient le point de passage de chaque partie ; une ligne rappelle le but au réveil. **N'importe qui peut désormais y jouer** — jusque-là le jeu n'indiquait nulle part quelles touches appuyer. La victoire, qui ne relançait rien depuis toujours, relance enfin. Aucune scène nouvelle, aucune règle touchée. Voir `BASE.md` et `PLAN.md`.
 
 ## LA QUESTION OUVERTE — à trancher avant de construire quoi que ce soit
 *(constat de Kinder, 16/07/2026, après la remise en ordre)*
@@ -32,7 +32,7 @@ Deux directions possibles, **une seule à la fois** :
 
 **TRANCHÉ le 20/07/2026, après l'audit de profondeur : le fil rouge, et la cave reste parquée.** Une cave posée aujourd'hui ajouterait quatre pièces interchangeables de plus à balayer, et un troisième rôdeur qui ignorerait les deux autres : 30 % de surface pour 0 % de propos.
 
-**LA QUESTION RESTE OUVERTE SUR SON CONTENU** — *« on l'approfondira après »* (Kinder, 20/07/2026). Le jet 12 en cours ne la traite pas : il apprend ses règles au joueur, il ne donne pas de profondeur au jeu.
+**LA QUESTION RESTE OUVERTE SUR SON CONTENU** — *« on l'approfondira après »* (Kinder, 20/07/2026). **C'est le prochain chantier du projet.** Le jet 12, clos le même jour, ne l'a pas traitée : il apprend ses règles au joueur, il ne donne pas de profondeur au jeu. Le joueur comprend désormais ce qu'on attend de lui — le jeu n'a toujours qu'un seul verbe.
 
 ### Ce que l'audit de profondeur a trouvé *(20/07/2026 — à relire avant d'ouvrir ce chantier)*
 

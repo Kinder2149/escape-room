@@ -25,6 +25,11 @@ const DUREE_REFUS := 2.5
 ## Une victoire se savoure un peu plus longtemps qu'une capture.
 const DUREE_LECTURE_ATTRAPE := 2.0
 const DUREE_LECTURE_GAGNE := 3.0
+## La ligne du réveil : le temps de la lire sans y penser, puis elle s'efface
+## d'elle-même. En fondu, pas d'un coup — une disparition sèche accroche l'œil
+## au moment précis où le joueur commence à regarder autour de lui.
+const DUREE_LIGNE_REVEIL := 4.0
+const DUREE_FONDU_REVEIL := 1.0
 
 @onready var message_gagne: Label = $Interface/MessageGagne
 @onready var message_perdu: Label = $Interface/MessagePerdu
@@ -33,6 +38,7 @@ const DUREE_LECTURE_GAGNE := 3.0
 @onready var compteur: Label = $Interface/Compteur
 @onready var fente: Control = $Interface/Fente
 @onready var message_audit: Label = $Interface/MessageAudit
+@onready var message_reveil: Label = $Interface/MessageReveil
 @onready var panneau: ColorRect = $Interface/Panneau
 
 ## Émis quand le joueur appuie sur une touche devant le panneau d'accueil.
@@ -58,6 +64,7 @@ func _ready() -> void:
 	message_action.text = ""
 	message_refus.text = ""
 	message_audit.hide()
+	message_reveil.hide()
 	fente.hide()
 	panneau.hide()
 	maj_compteur()
@@ -141,6 +148,19 @@ func entre_dans_le_manoir() -> void:
 	joueur.set_physics_process(true)
 	joueur.set_process_unhandled_input(true)
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	annonce_le_reveil()
+
+
+## Le panneau se lit une fois, avant d'entrer. Cette ligne est ce qui reste
+## quand le joueur se retrouve seul dans le noir — le but, et rien d'autre.
+## Elle ne demande rien : elle s'efface toute seule.
+func annonce_le_reveil() -> void:
+	message_reveil.modulate.a = 1.0
+	message_reveil.show()
+	var fondu := create_tween()
+	fondu.tween_interval(DUREE_LIGNE_REVEIL)
+	fondu.tween_property(message_reveil, "modulate:a", 0.0, DUREE_FONDU_REVEIL)
+	fondu.tween_callback(message_reveil.hide)
 
 
 ## Devant le panneau, n'importe quelle touche entre dans le manoir — c'est ce
