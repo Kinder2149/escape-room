@@ -45,12 +45,10 @@ func _ready() -> void:
 		var coffre: StaticBody3D = jeu.get_node(nom)
 		controle("%s : on peut l'ouvrir (« %s »)" % [nom, jeu.message_action.text],
 			await devant(coffre, 1.3, 0.25, "Ouvrir"))
-		agir()
-		await get_tree().physics_frame
+		await agir_et_fouille()
 		controle("%s : il propose son contenu (« %s »)" % [nom, jeu.message_action.text],
 			await attendre("Prendre"))
-		agir()
-		await get_tree().physics_frame
+		await agir_et_fouille()
 	controle("les deux morceaux sont comptes (« %s »)" % jeu.compteur.text,
 		jeu.compteur.text == "Morceaux de clé : 2 / 2")
 
@@ -68,12 +66,10 @@ func _ready() -> void:
 	var fort: StaticBody3D = jeu.get_node("CoffreFort")
 	controle("le coffre-fort se vise (« %s »)" % jeu.message_action.text,
 		await devant(fort, 1.6, 0.35, "Ouvrir"))
-	agir()
-	await get_tree().physics_frame
+	await agir_et_fouille()
 	controle("il s'ouvre avec les deux morceaux (« %s »)" % jeu.message_action.text,
 		await attendre("Prendre"))
-	agir()
-	await get_tree().physics_frame
+	await agir_et_fouille()
 	controle("le badge est en poche (« %s »)" % jeu.compteur.text,
 		jeu.badge and jeu.compteur.text == "Badge en poche")
 
@@ -147,6 +143,15 @@ func agir() -> void:
 	e.action = "agir"
 	e.pressed = true
 	joueur._unhandled_input(e)
+
+
+## Comme un joueur : on appuie, puis on laisse la fouille aller à son terme —
+## ouvrir un coffre ou prendre son contenu cloue le joueur un moment (jet 13).
+## La sonde ne bouge pas pendant ce temps, donc la fouille n'est jamais annulée.
+func agir_et_fouille() -> void:
+	agir()
+	while joueur.est_en_fouille():
+		await get_tree().physics_frame
 
 
 func controle(nom: String, condition: bool) -> void:

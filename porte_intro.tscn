@@ -1,0 +1,32 @@
+[gd_scene load_steps=5 format=3]
+
+; La porte verrouillée du sas d'introduction (jet 16). Un corps physique plein
+; qui bloque le joueur dans le sas ; il la vise et l'ouvre avec E, le Jeu décide
+; (clé d'intro). En bois, pour trancher sur la pierre sombre des murs quand la
+; torche passe dessus. Posée en instance FIXE dans jeu.tscn — voir porte_intro.gd.
+
+[ext_resource type="Script" path="res://porte_intro.gd" id="1_porte_intro"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bois"]
+albedo_color = Color(0.4, 0.26, 0.14, 1)
+roughness = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_battant"]
+material = SubResource("StandardMaterial3D_bois")
+size = Vector3(1.6, 2.2, 0.1)
+
+; Collision un peu plus large que l'ouverture (1,6 × 2,2) : elle scelle le
+; passage sans le moindre interstice où se faufiler.
+[sub_resource type="BoxShape3D" id="BoxShape3D_battant"]
+size = Vector3(1.7, 2.3, 0.15)
+
+[node name="PorteIntro" type="StaticBody3D"]
+script = ExtResource("1_porte_intro")
+
+[node name="Battant" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
+mesh = SubResource("BoxMesh_battant")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
+shape = SubResource("BoxShape3D_battant")

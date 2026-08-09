@@ -29,6 +29,12 @@ var cible: Node3D = null
 var dernier_texte := ""
 var cachette: Node3D = null
 var cap_cachette := 0.0
+## La fouille en cours (jet 13) : le coffre qu'on ouvre, le temps qu'il reste
+## avant que le couvercle bascule, et la durée totale (pour la barre à l'écran).
+## Pendant ce temps le joueur est cloué, le regard fixe, mais un pas l'annule.
+var fouille_cible: Node3D = null
+var fouille_reste := 0.0
+var fouille_duree := 0.0
 
 
 func _ready() -> void:
@@ -40,18 +46,35 @@ func est_cache() -> bool:
 	return cachette != null
 
 
+## Fouille-t-il un coffre en ce moment ? Cloué, le regard fixe, mais libre de
+## tout annuler d'un pas — c'est ce qui rend l'exposition un choix, pas un piège.
+func est_en_fouille() -> bool:
+	return fouille_cible != null
+
+
+## Où en est la fouille, de 0 (tout juste commencée) à 1 (le coffre s'ouvre).
+## La barre à l'écran s'en sert pour montrer que l'ouverture est en cours.
+func fouille_fraction() -> float:
+	if fouille_duree <= 0.0:
+		return 0.0
+	return clampf(1.0 - fouille_reste / fouille_duree, 0.0, 1.0)
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		if est_cache():
 			regarde_par_la_fente(event.relative)
+		elif est_en_fouille():
+			pass  # Regard fixe : le danger se lit à l'oreille, pas à l'œil.
 		else:
 			regarde(event.relative)
 	elif event.is_action_pressed("agir"):
 		if est_cache():
 			sors_de_cachette()
+		elif est_en_fouille():
+			pass  # La touche est inerte pendant la fouille ; seul un pas l'annule.
 		elif cible != null:
-			cible.agir()
-			maj_visee()
+			commence_ou_agit(cible)
 	elif event.is_action_pressed("ui_cancel"):
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	elif event is InputEventMouseButton and event.pressed:
@@ -115,11 +138,58 @@ func sors_de_cachette() -> void:
 	cache_change.emit(false)
 
 
+## Agir sur ce qu'on vise. Si l'objet demande une fouille (ouvrir un coffre,
+## prendre son contenu), le geste cloue le joueur le temps qu'elle dure et
+## n'aboutit qu'à la fin ; sinon il est instantané (se cacher, la porte).
+func commence_ou_agit(sur_qui: Node3D) -> void:
+	var duree: float = sur_qui.duree_fouille() if sur_qui.has_method("duree_fouille") else 0.0
+	if duree > 0.0:
+		fouille_cible = sur_qui
+		fouille_reste = duree
+		fouille_duree = duree
+	else:
+		sur_qui.agir()
+		maj_visee()
+
+
+## Un pas suffit à décrocher : la fouille est abandonnée, le coffre reste fermé
+## ou l'objet non pris. On retrouve la main immédiatement pour fuir.
+func annule_fouille() -> void:
+	fouille_cible = null
+	fouille_reste = 0.0
+
+
+## La fouille est allée à son terme : le geste aboutit enfin — le coffre s'ouvre
+## ou l'objet est pris.
+func termine_fouille() -> void:
+	var abouti: Node3D = fouille_cible
+	fouille_cible = null
+	fouille_reste = 0.0
+	if abouti != null:
+		abouti.agir()
+	maj_visee()
+
+
 func _physics_process(delta: float) -> void:
 	if not is_on_floor():
 		velocity += get_gravity() * delta
 
 	var saisie := Input.get_vector("gauche", "droite", "avancer", "reculer")
+
+	# Cloué le temps de la fouille — mais un pas la rompt et rend la main aussitôt.
+	# On repart les mains vides : c'est le coût de décrocher.
+	if est_en_fouille():
+		if saisie.length() > 0.0:
+			annule_fouille()
+		else:
+			fouille_reste -= delta
+			velocity.x = 0.0
+			velocity.z = 0.0
+			move_and_slide()
+			if fouille_reste <= 0.0:
+				termine_fouille()
+			return
+
 	var direction := (transform.basis * Vector3(saisie.x, 0.0, saisie.y)).normalized()
 	velocity.x = direction.x * VITESSE
 	velocity.z = direction.z * VITESSE

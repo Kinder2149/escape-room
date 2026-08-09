@@ -16,3 +16,13 @@ extends Node3D
 @onready var coffre: Marker3D = $Coffre
 @onready var sortie: Marker3D = $Sortie
 @onready var reveil: Marker3D = $Reveil
+@onready var plaque: Label3D = $Plaque
+
+## Le nom lisible de la pièce, réglé par pièce (« Salle à manger ») : le nom du
+## nœud est en CamelCase sans accent, impropre à l'affichage. Vide → on retombe
+## sur le nom du nœud, le temps qu'il soit renseigné.
+@export var nom_affiche := ""
+
+
+func _ready() -> void:
+	plaque.text = nom_affiche if nom_affiche != "" else String(name)

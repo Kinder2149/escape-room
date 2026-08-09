@@ -2,9 +2,11 @@ extends SceneTree
 
 # Sonde jetable — jet 7, retour de Kinder : « il reprend sa ronde au lieu de
 # me chercher ». Scenario : le joueur est vu DANS LE COULOIR, fuit dans la
-# chambre et s'y cache sans etre vu entrer.
-# Attendu : le rodeur ratisse PLUSIEURS pieces du coin (dont la chambre),
+# salle de bain et s'y cache (la baignoire) sans etre vu entrer.
+# Attendu : le rodeur ratisse PLUSIEURS pieces du coin (dont la salle de bain),
 # au pas, sans jamais attraper le joueur cache, puis renonce et reprend sa ronde.
+# (Reloge de la Chambre vers la salle de bain au jet 16 : la Chambre est
+#  devenue le sas d'intro, scelle — les rodeurs n'y mettent plus les pieds.)
 
 var jeu: Node3D = null
 var frames := 0
@@ -16,7 +18,7 @@ var pieces_vues: Array = []
 var vitesse_max := 0.0
 var a_ratisse := false
 var a_repris_la_ronde := false
-var distance_min_chambre := INF
+var distance_min_sdb := INF
 var loin_de_lancre := 0.0
 
 
@@ -38,8 +40,8 @@ func _process(_delta: float) -> bool:
 
 	if phase == "attente":
 		rodeur.joueur_attrape.connect(func() -> void: attrape = true)
-		joueur.global_position = Vector3(-7.0, 0.1, 0.0)   # couloir ouest
-		rodeur.global_position = Vector3(-2.0, 0.0, 0.0)   # couloir, le voit
+		joueur.global_position = Vector3(-0.7, 0.1, 0.0)   # couloir, devant la salle de bain
+		rodeur.global_position = Vector3(3.5, 0.0, 0.0)    # couloir, le voit
 		rodeur.rotation = Vector3(0.0, deg_to_rad(90.0), 0.0)
 		rodeur.commence_poursuite()
 		phase = "poursuite"
@@ -53,7 +55,7 @@ func _process(_delta: float) -> bool:
 		_exige("sa derniere position connue est dans le couloir (z=%.1f)"
 			% rodeur.derniere_position_connue.z,
 			absf(rodeur.derniere_position_connue.z) < 1.4)
-		joueur.entre_dans_cachette(jeu.get_node("CachetteArmoire"))
+		joueur.entre_dans_cachette(jeu.get_node("CachetteBaignoire"))
 		_exige("le joueur est cache", joueur.est_cache())
 		phase = "battue"
 		frames = 0
@@ -68,7 +70,7 @@ func _process(_delta: float) -> bool:
 			vitesse_max = maxf(vitesse_max,
 				Vector2(rodeur.velocity.x, rodeur.velocity.z).length())
 			var ici := Vector2(rodeur.global_position.x, rodeur.global_position.z)
-			distance_min_chambre = minf(distance_min_chambre, ici.distance_to(Vector2(-6.0, 4.0)))
+			distance_min_sdb = minf(distance_min_sdb, ici.distance_to(Vector2(-1.0, 4.0)))
 			loin_de_lancre = maxf(loin_de_lancre,
 				ici.distance_to(Vector2(rodeur.ancre_battue.x, rodeur.ancre_battue.z)))
 		elif a_ratisse and not rodeur.en_poursuite:
@@ -81,10 +83,10 @@ func _process(_delta: float) -> bool:
 			_exige("il lance une battue au lieu de repartir en ronde", a_ratisse)
 			_exige("il fouille PLUSIEURS pieces du coin (%d : %s)"
 				% [pieces_vues.size(), ", ".join(pieces_vues)], pieces_vues.size() >= 2)
-			_exige("il fouille la chambre, la ou le joueur a disparu",
-				"Chambre" in pieces_vues)
-			_exige("il s'approche vraiment du coeur de la chambre (%.1f m)"
-				% distance_min_chambre, distance_min_chambre < 2.0)
+			_exige("il fouille la salle de bain, la ou le joueur a disparu",
+				"SalleDeBain" in pieces_vues)
+			_exige("il s'approche vraiment du coeur de la salle de bain (%.1f m)"
+				% distance_min_sdb, distance_min_sdb < 2.0)
 			_exige("il s'eloigne de l'ancre pour ratisser (%.1f m)" % loin_de_lancre,
 				loin_de_lancre > 3.0)
 			_exige("il ratisse au pas (%.1f m/s max)" % vitesse_max,

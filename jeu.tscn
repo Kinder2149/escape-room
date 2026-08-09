@@ -1,21 +1,24 @@
-[gd_scene load_steps=18 format=3]
+[gd_scene format=3 uid="uid://b112sosmcu125"]
 
-; Scène principale : assemble le décor, le joueur, le rôdeur, la sortie,
-; les coffres et les cachettes. À chaque lancement, jeu.gd tire la
-; distribution au sort sur les repères des pièces de la maison (voir jeu.gd).
-
-[ext_resource type="Script" path="res://jeu.gd" id="1_jeu"]
+[ext_resource type="Script" uid="uid://73syiuygmndy" path="res://jeu.gd" id="1_jeu"]
 [ext_resource type="PackedScene" path="res://maison.tscn" id="2_maison"]
 [ext_resource type="PackedScene" path="res://joueur.tscn" id="3_joueur"]
 [ext_resource type="PackedScene" path="res://sortie.tscn" id="4_sortie"]
 [ext_resource type="PackedScene" path="res://coffre.tscn" id="5_coffre"]
 [ext_resource type="PackedScene" path="res://cachette.tscn" id="7_cachette"]
 [ext_resource type="PackedScene" path="res://coffre_fort.tscn" id="8_coffre_fort"]
+[ext_resource type="PackedScene" path="res://porte_intro.tscn" id="12_porte_intro"]
+[ext_resource type="AudioStream" uid="uid://beksuk7bitacv" path="res://assets/son/vue-temp.wav" id="9_o5b5a"]
 [ext_resource type="PackedScene" path="res://rodeur_incarne.tscn" id="9_rodeur_incarne"]
+[ext_resource type="AudioStream" uid="uid://cnqj6q488hjl7" path="res://assets/son/poursuite_temp.wav" id="10_poe8c"]
+[ext_resource type="AudioStream" uid="uid://0elpv7acryaa" path="res://assets/son/attrape_temp.wav" id="11_8qsxd"]
+[ext_resource type="Script" path="res://carte.gd" id="13_carte"]
+[ext_resource type="PackedScene" path="res://carte_objet.tscn" id="14_carte_objet"]
+[ext_resource type="PackedScene" path="res://bouton_dev.tscn" id="15_bouton_dev"]
+[ext_resource type="PackedScene" path="res://portail.tscn" id="16_portail"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_gagne"]
 font_size = 96
-font_color = Color(1, 1, 1, 1)
 outline_size = 12
 outline_color = Color(0, 0, 0, 1)
 
@@ -27,9 +30,20 @@ outline_color = Color(0, 0, 0, 1)
 
 [sub_resource type="LabelSettings" id="LabelSettings_action"]
 font_size = 28
-font_color = Color(1, 1, 1, 1)
 outline_size = 6
 outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_audit"]
+font_size = 26
+font_color = Color(1, 0.25, 0.2, 1)
+outline_size = 8
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_reveil"]
+font_size = 32
+font_color = Color(0.94, 0.93, 0.91, 1)
+outline_size = 8
+outline_color = Color(0, 0, 0, 0.85)
 
 [sub_resource type="LabelSettings" id="LabelSettings_panneau_titre"]
 font_size = 46
@@ -41,147 +55,109 @@ font_color = Color(0.94, 0.93, 0.91, 1)
 
 [sub_resource type="LabelSettings" id="LabelSettings_panneau_entrer"]
 font_size = 18
-font_color = Color(0.37, 0.8, 0.84, 1)
-
-[sub_resource type="LabelSettings" id="LabelSettings_reveil"]
-font_size = 32
 font_color = Color(0.94, 0.93, 0.91, 1)
-outline_size = 8
-outline_color = Color(0, 0, 0, 0.85)
 
-[sub_resource type="LabelSettings" id="LabelSettings_audit"]
-font_size = 26
-font_color = Color(1, 0.25, 0.2, 1)
-outline_size = 8
-outline_color = Color(0, 0, 0, 1)
-
-[node name="Jeu" type="Node3D"]
+[node name="Jeu" type="Node3D" unique_id=1975576316]
 script = ExtResource("1_jeu")
 
-[node name="Maison" parent="." instance=ExtResource("2_maison")]
+[node name="Maison" parent="." unique_id=422744239 instance=ExtResource("2_maison")]
 
-[node name="Joueur" parent="." instance=ExtResource("3_joueur")]
+[node name="Joueur" parent="." unique_id=1191738171 instance=ExtResource("3_joueur")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -7.5, 0.1, -7.5)
 
-[node name="Sortie" parent="." instance=ExtResource("4_sortie")]
+[node name="Sortie" parent="." unique_id=2139088284 instance=ExtResource("4_sortie")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.8, 0, 8.75)
 
-; Les deux coffres ne sont plus attachés à une pièce : jeu.gd les distribue au
-; démarrage. Leur position ici n'est qu'un point de départ, aussitôt écrasé.
-[node name="CoffreA" parent="." instance=ExtResource("5_coffre")]
+[node name="CoffreA" parent="." unique_id=1988337405 instance=ExtResource("5_coffre")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, -7.5)
 
-[node name="CoffreB" parent="." instance=ExtResource("5_coffre")]
+[node name="CoffreB" parent="." unique_id=621920802 instance=ExtResource("5_coffre")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -9.8, 0, 4.5)
 
-; Le coffre-fort (jet 9) : sa propre scène, car son modèle 3D diffère —
-; plus gros, en métal, le badge dedans. Le reste est identique à un coffre.
-[node name="CoffreFort" parent="." instance=ExtResource("8_coffre_fort")]
+[node name="CoffreFort" parent="." unique_id=386797285 instance=ExtResource("8_coffre_fort")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 7.5)
 
-; UN RÔDEUR PAR NIVEAU, tous deux incarnés par le pantin. L'ordre dans le
-; groupe « rodeurs » décide de leur étage, du bas vers le haut — voir
-; lance_les_rodeurs dans jeu.gd.
-; Rangés dans un couloir et invisibles tant que la maison n'est pas prête :
-; jeu.gd les pose ensuite sur un départ sûr de leur niveau (voir place_rodeur).
-; Leur position de rangement ne doit coïncider avec AUCUN repère de réveil —
-; deux corps au même endroit, et la physique expulse le joueur (défaut du Salon).
-[node name="Rodeur" parent="." groups=["rodeurs"] instance=ExtResource("9_rodeur_incarne")]
+[node name="CoffreIntro" parent="." unique_id=900000001 instance=ExtResource("5_coffre")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -9.8, 0, 4.5)
+contient_cle_intro = true
+
+[node name="PorteIntroSud" parent="." unique_id=900000002 groups=["portes_intro"] instance=ExtResource("12_porte_intro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 0, 1.5)
+
+[node name="PorteIntroEst" parent="." unique_id=900000003 groups=["portes_intro"] instance=ExtResource("12_porte_intro")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -4.1, 0, 3.5)
+
+[node name="CarteObjet" parent="." unique_id=900000004 instance=ExtResource("14_carte_objet")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 0.78, 5.5)
+
+[node name="BoutonDev" parent="." unique_id=900000005 instance=ExtResource("15_bouton_dev")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.4, 1.3, 6)
+
+[node name="PortailDev" parent="." unique_id=900000006 instance=ExtResource("16_portail")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -10.6, 0, 7.5)
+scene_cible = "res://quartier.tscn"
+
+[node name="Rodeur" parent="." unique_id=2032547092 groups=["rodeurs"] instance=ExtResource("9_rodeur_incarne")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
 visible = false
 
-[node name="RodeurEtage" parent="." groups=["rodeurs"] instance=ExtResource("9_rodeur_incarne")]
+[node name="RodeurEtage" parent="." unique_id=165855503 groups=["rodeurs"] instance=ExtResource("9_rodeur_incarne")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.3, 0)
 visible = false
 
-; L'armoire (chambre) : on s'y tient debout, face tournée vers -X.
-[node name="CachetteArmoire" parent="." groups=["cachettes"] instance=ExtResource("7_cachette")]
+[node name="CachetteArmoire" parent="." unique_id=57033036 groups=["cachettes"] instance=ExtResource("7_cachette")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -4.81, 0, 6)
-largeur_face = 1.5
-hauteur_face = 1.9
-hauteur_vue = 1.5
 
-; La penderie (salon) : on s'y tient debout, comme dans l'armoire.
-; Arbitrage de Kinder (jet 7) : les cachettes sont des meubles où l'on ENTRE
-; vraiment — plus de « derrière un meuble ». Le canapé reste un simple meuble.
-[node name="CachettePenderie" parent="." groups=["cachettes"] instance=ExtResource("7_cachette")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 3.6, 0, -8.0)
+[node name="CachettePenderie" parent="." unique_id=2108122024 groups=["cachettes"] instance=ExtResource("7_cachette")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 3.6, 0, -8)
 largeur_face = 1.3
 hauteur_face = 2.0
-hauteur_vue = 1.5
 
-; La baignoire (salle de bain) : couché dedans, les yeux au ras du bord.
-; La zone de visée monte bien plus haut que la baignoire : on ne la traverse
-; pas, et sans ça il faudrait viser ses pieds pour y entrer.
-[node name="CachetteBaignoire" parent="." groups=["cachettes"] instance=ExtResource("7_cachette")]
+[node name="CachetteBaignoire" parent="." unique_id=536228324 groups=["cachettes"] instance=ExtResource("7_cachette")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, 7.89)
 largeur_face = 1.8
 hauteur_face = 1.6
 hauteur_vue = 0.7
 recul_sortie = 0.6
 
-; Le bureau (la pièce de la porte rouge) : à plat dessous. Décalé de la chaise
-; et les yeux sous son assise, sinon elle bouche toute la vue. On ressort loin
-; devant, sinon on réapparaîtrait dedans.
-[node name="CachetteBureau" parent="." groups=["cachettes"] instance=ExtResource("7_cachette")]
+[node name="CachetteBureau" parent="." unique_id=817310332 groups=["cachettes"] instance=ExtResource("7_cachette")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 3.8, 0, 3.41)
-largeur_face = 1.5
 hauteur_face = 1.6
 hauteur_vue = 0.35
 recul_sortie = 1.2
 
-; La grande table (salle à manger) : à plat dessous, comme sous le bureau.
-; On l'aborde par le petit côté est — les chaises occupent les côtés nord
-; et sud. On ressort d'un bon pas, sinon on réapparaîtrait sous le plateau.
-; La zone de visée monte bien plus haut que le plateau : sans ça, il faudrait
-; viser ses pieds pour entrer (leçon du bureau, jet 4).
-[node name="CachetteTable" parent="." groups=["cachettes"] instance=ExtResource("7_cachette")]
+[node name="CachetteTable" parent="." unique_id=338310878 groups=["cachettes"] instance=ExtResource("7_cachette")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 15.2, 0, -5.2)
 largeur_face = 1.4
 hauteur_face = 1.6
 hauteur_vue = 0.35
 recul_sortie = 0.8
 
-; La malle (bibliothèque) : couché dedans, les yeux au ras du couvercle,
-; comme la baignoire. La zone de visée monte plus haut que la malle (leçon
-; du bureau, jet 4). Le fauteuil reste un simple meuble.
-[node name="CachetteMalle" parent="." groups=["cachettes"] instance=ExtResource("7_cachette")]
+[node name="CachetteMalle" parent="." unique_id=1667471887 groups=["cachettes"] instance=ExtResource("7_cachette")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.1, 0, 7.9)
-largeur_face = 1.5
 hauteur_face = 1.5
 hauteur_vue = 0.5
 decalage_vue = 0.15
 recul_sortie = 0.7
 
-; ---- LES TROIS CACHETTES DE L'ÉTAGE (jet 8) ----
-
-; L'armoire (chambre d'amis) : on s'y tient debout, abordée par le sud.
-[node name="CachetteArmoireEtage" parent="." groups=["cachettes"] instance=ExtResource("7_cachette")]
+[node name="CachetteArmoireEtage" parent="." unique_id=953325001 groups=["cachettes"] instance=ExtResource("7_cachette")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 1.5, 3.2, -8)
 largeur_face = 1.4
-hauteur_face = 1.9
-hauteur_vue = 1.5
 
-; La penderie (dressing) : debout également, abordée par l'est.
-[node name="CachettePenderieEtage" parent="." groups=["cachettes"] instance=ExtResource("7_cachette")]
+[node name="CachettePenderieEtage" parent="." unique_id=1192506678 groups=["cachettes"] instance=ExtResource("7_cachette")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 12.75, 3.2, -5.5)
 largeur_face = 1.8
 hauteur_face = 2.0
-hauteur_vue = 1.5
 
-; Sous le grand lit (chambre de maître) : à plat, on s'y glisse par le sud.
-; La zone de visée monte bien plus haut que le lit — sans quoi il faudrait
-; viser le sol pour entrer (leçon du bureau, jet 4, et de la table, jet 7).
-[node name="CachetteSousLeLit" parent="." groups=["cachettes"] instance=ExtResource("7_cachette")]
+[node name="CachetteSousLeLit" parent="." unique_id=463194266 groups=["cachettes"] instance=ExtResource("7_cachette")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 5.5, 3.2, -4.95)
-largeur_face = 1.5
 hauteur_face = 1.6
 hauteur_vue = 0.35
 recul_sortie = 0.8
 
-[node name="Interface" type="CanvasLayer" parent="."]
+[node name="Interface" type="CanvasLayer" parent="." unique_id=679359390]
 
-[node name="MessageGagne" type="Label" parent="Interface"]
+[node name="MessageGagne" type="Label" parent="Interface" unique_id=1955241867]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -192,7 +168,7 @@ label_settings = SubResource("LabelSettings_gagne")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="MessagePerdu" type="Label" parent="Interface"]
+[node name="MessagePerdu" type="Label" parent="Interface" unique_id=429307215]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -203,7 +179,7 @@ label_settings = SubResource("LabelSettings_perdu")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="MessageAction" type="Label" parent="Interface"]
+[node name="MessageAction" type="Label" parent="Interface" unique_id=115457306]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -214,7 +190,8 @@ label_settings = SubResource("LabelSettings_action")
 horizontal_alignment = 1
 vertical_alignment = 2
 
-[node name="Fente" type="Control" parent="Interface"]
+[node name="Fente" type="Control" parent="Interface" unique_id=951783265]
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -222,15 +199,15 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="Haut" type="ColorRect" parent="Interface/Fente"]
-anchors_preset = 10
+[node name="Haut" type="ColorRect" parent="Interface/Fente" unique_id=1972642634]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 0.225
 grow_horizontal = 2
 color = Color(0, 0, 0, 1)
 
-[node name="Bas" type="ColorRect" parent="Interface/Fente"]
-anchors_preset = 12
+[node name="Bas" type="ColorRect" parent="Interface/Fente" unique_id=935510366]
+layout_mode = 0
 anchor_top = 0.775
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -238,16 +215,16 @@ grow_horizontal = 2
 grow_vertical = 0
 color = Color(0, 0, 0, 1)
 
-[node name="Gauche" type="ColorRect" parent="Interface/Fente"]
-anchors_preset = 9
+[node name="Gauche" type="ColorRect" parent="Interface/Fente" unique_id=1581807828]
+layout_mode = 0
 anchor_top = 0.225
 anchor_right = 0.39
 anchor_bottom = 0.775
 grow_vertical = 2
 color = Color(0, 0, 0, 1)
 
-[node name="Droite" type="ColorRect" parent="Interface/Fente"]
-anchors_preset = 11
+[node name="Droite" type="ColorRect" parent="Interface/Fente" unique_id=1620835379]
+layout_mode = 0
 anchor_left = 0.61
 anchor_top = 0.225
 anchor_right = 1.0
@@ -256,17 +233,14 @@ grow_horizontal = 0
 grow_vertical = 2
 color = Color(0, 0, 0, 1)
 
-[node name="Compteur" type="Label" parent="Interface"]
+[node name="Compteur" type="Label" parent="Interface" unique_id=2146630052]
 offset_left = 24.0
 offset_top = 18.0
 offset_right = 400.0
 offset_bottom = 52.0
 label_settings = SubResource("LabelSettings_action")
 
-; Le filet de la maison : si un emplacement est cassé (repère dans un mur,
-; porte rouge à l'intérieur...), la liste des problèmes s'affiche ici en rouge
-; dès le lancement. Invisible quand tout va bien.
-[node name="MessageAudit" type="Label" parent="Interface"]
+[node name="MessageAudit" type="Label" parent="Interface" unique_id=1231444484]
 anchors_preset = 10
 anchor_right = 1.0
 offset_top = 64.0
@@ -274,11 +248,7 @@ grow_horizontal = 2
 label_settings = SubResource("LabelSettings_audit")
 horizontal_alignment = 1
 
-; LA LIGNE DU RÉVEIL (jet 12). Le panneau se lit une fois ; cette ligne est ce
-; qui reste quand le joueur est lâché dans le noir. Elle se place au-dessus du
-; centre pour ne pas masquer ce qu'on regarde, et s'efface en fondu au bout de
-; quelques secondes — sans jamais demander qu'on s'en occupe.
-[node name="MessageReveil" type="Label" parent="Interface"]
+[node name="MessageReveil" type="Label" parent="Interface" unique_id=578599244]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -290,7 +260,7 @@ label_settings = SubResource("LabelSettings_reveil")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="MessageRefus" type="Label" parent="Interface"]
+[node name="MessageRefus" type="Label" parent="Interface" unique_id=1684266399]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -301,26 +271,26 @@ label_settings = SubResource("LabelSettings_action")
 horizontal_alignment = 1
 vertical_alignment = 2
 
-; LE PANNEAU D'ACCUEIL (jet 12). Il énonce le but, la chaîne, les gestes,
-; le losange des abris et les rôdeurs. Posé en dernier : il se dessine
-; par-dessus tout le reste. Le bandeau d'audit ne s'affiche qu'après sa
-; fermeture, sinon il naîtrait caché derrière.
-; Ce qu'il NE DIT PAS, délibérément : que les rôdeurs sont plus lents que le
-; joueur. C'est la stratégie qui viderait les neuf cachettes de leur utilité.
-; « mouse_filter = 2 » : sans lui, le panneau avalerait les clics avant que le
-; jeu les voie, et seul le clavier ferait entrer — alors qu'on promet « une
-; touche ».
-[node name="Panneau" type="ColorRect" parent="Interface"]
+[node name="Carte" type="Control" parent="Interface" unique_id=900000010]
+script = ExtResource("13_carte")
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.03, 0.03, 0.04, 0.985)
 mouse_filter = 2
 
-[node name="Marges" type="MarginContainer" parent="Interface/Panneau"]
+[node name="Panneau" type="ColorRect" parent="Interface" unique_id=148853051]
 anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.03, 0.03, 0.04, 0.985)
+
+[node name="Marges" type="MarginContainer" parent="Interface/Panneau" unique_id=61473077]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
@@ -331,86 +301,107 @@ theme_override_constants/margin_top = 24
 theme_override_constants/margin_right = 48
 theme_override_constants/margin_bottom = 24
 
-[node name="Colonne" type="VBoxContainer" parent="Interface/Panneau/Marges"]
+[node name="Colonne" type="VBoxContainer" parent="Interface/Panneau/Marges" unique_id=2095075108]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 8
 alignment = 1
 
-[node name="Titre" type="Label" parent="Interface/Panneau/Marges/Colonne"]
+[node name="Titre" type="Label" parent="Interface/Panneau/Marges/Colonne" unique_id=555759523]
 layout_mode = 2
 text = "MANOIR"
 label_settings = SubResource("LabelSettings_panneau_titre")
 horizontal_alignment = 1
 
-[node name="But" type="Label" parent="Interface/Panneau/Marges/Colonne"]
+[node name="But" type="Label" parent="Interface/Panneau/Marges/Colonne" unique_id=345867437]
 layout_mode = 2
 text = "Tu es enfermé. Sors."
 label_settings = SubResource("LabelSettings_panneau_but")
 horizontal_alignment = 1
 
-[node name="EspaceA" type="Control" parent="Interface/Panneau/Marges/Colonne"]
+[node name="EspaceA" type="Control" parent="Interface/Panneau/Marges/Colonne" unique_id=949588175]
 custom_minimum_size = Vector2(0, 34)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Chaine" type="RichTextLabel" parent="Interface/Panneau/Marges/Colonne"]
+[node name="Chaine" type="RichTextLabel" parent="Interface/Panneau/Marges/Colonne" unique_id=1367982869]
 layout_mode = 2
 mouse_filter = 2
+theme_override_font_sizes/normal_font_size = 22
 bbcode_enabled = true
 text = "[center][color=#d9b26a]2 morceaux de clé[/color]   [color=#5a5f66]→[/color]   [color=#b9c0c8]le coffre-fort[/color]   [color=#5a5f66]→[/color]   [color=#f2f0ea]le badge[/color]   [color=#5a5f66]→[/color]   [color=#e04a3c]la porte rouge[/color][/center]"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
-theme_override_font_sizes/normal_font_size = 22
 
-[node name="EspaceB" type="Control" parent="Interface/Panneau/Marges/Colonne"]
+[node name="EspaceB" type="Control" parent="Interface/Panneau/Marges/Colonne" unique_id=677451673]
 custom_minimum_size = Vector2(0, 34)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Rodeurs" type="RichTextLabel" parent="Interface/Panneau/Marges/Colonne"]
+[node name="Rodeurs" type="RichTextLabel" parent="Interface/Panneau/Marges/Colonne" unique_id=593923833]
 layout_mode = 2
 mouse_filter = 2
+theme_override_font_sizes/normal_font_size = 19
 bbcode_enabled = true
 text = "[center][color=#9aa0a8]Deux rôdeurs te traquent dans le noir. S'ils te touchent, c'est fini.[/color][/center]"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
-theme_override_font_sizes/normal_font_size = 19
 
-[node name="Abri" type="RichTextLabel" parent="Interface/Panneau/Marges/Colonne"]
+[node name="Abri" type="RichTextLabel" parent="Interface/Panneau/Marges/Colonne" unique_id=1279972389]
 layout_mode = 2
 mouse_filter = 2
+theme_override_font_sizes/normal_font_size = 19
 bbcode_enabled = true
 text = "[center][color=#73e6ff]◆[/color]  [color=#9aa0a8]un meuble où te glisser, le temps qu'ils passent.[/color][/center]"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
-theme_override_font_sizes/normal_font_size = 19
 
-[node name="EspaceC" type="Control" parent="Interface/Panneau/Marges/Colonne"]
+[node name="EspaceC" type="Control" parent="Interface/Panneau/Marges/Colonne" unique_id=242571292]
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Gestes" type="RichTextLabel" parent="Interface/Panneau/Marges/Colonne"]
+[node name="Gestes" type="RichTextLabel" parent="Interface/Panneau/Marges/Colonne" unique_id=593667305]
 layout_mode = 2
 mouse_filter = 2
+theme_override_font_sizes/normal_font_size = 19
 bbcode_enabled = true
 text = "[center][color=#d9b26a][b]ZQSD[/b][/color] [color=#7d838b]marcher[/color]     [color=#d9b26a][b]souris[/b][/color] [color=#7d838b]regarder[/color]     [color=#d9b26a][b]E[/b][/color] [color=#7d838b]agir[/color][/center]"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
-theme_override_font_sizes/normal_font_size = 19
 
-[node name="EspaceD" type="Control" parent="Interface/Panneau/Marges/Colonne"]
+[node name="EspaceD" type="Control" parent="Interface/Panneau/Marges/Colonne" unique_id=778161637]
 custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Entrer" type="Label" parent="Interface/Panneau/Marges/Colonne"]
+[node name="Entrer" type="Label" parent="Interface/Panneau/Marges/Colonne" unique_id=175109653]
 layout_mode = 2
 text = "appuie sur une touche pour entrer"
 label_settings = SubResource("LabelSettings_panneau_entrer")
 horizontal_alignment = 1
+
+[node name="BarreFouille" type="ProgressBar" parent="Interface" unique_id=1680781773]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -110.0
+offset_top = 48.0
+offset_right = 110.0
+offset_bottom = 66.0
+show_percentage = false
+
+[node name="SonVue" type="AudioStreamPlayer" parent="." unique_id=1374331120]
+stream = ExtResource("9_o5b5a")
+
+[node name="SonPoursuite" type="AudioStreamPlayer" parent="." unique_id=576678639]
+stream = ExtResource("10_poe8c")
+
+[node name="SonAttrape" type="AudioStreamPlayer" parent="." unique_id=749690063]
+stream = ExtResource("11_8qsxd")

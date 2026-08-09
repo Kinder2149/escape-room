@@ -6,6 +6,9 @@ extends CharacterBody3D
 ## quelques secondes avant d'abandonner. S'il le touche, c'est perdu.
 
 signal joueur_attrape
+## Émis quand il repère le joueur : porte sa position, que le Jeu relaie à
+## l'autre rôdeur pour l'étau (jet 14).
+signal repere_le_joueur(ou: Vector3)
 
 const VITESSE_MARCHE := 2.0
 ## Jamais plus rapide que le joueur (4.5) : on prend de l'avance en ligne droite.
@@ -65,6 +68,13 @@ const DISTANCE_CONTACT := 0.9
 const DISTANCE_CHARGE := 2.5
 const HAUTEUR_TORSE := 1.0
 
+## L'ÉTAU (jet 14) — un rôdeur qui voit le joueur prévient l'autre. Le prévenu ne
+## rejoint que s'il peut arriver à temps pour servir : au plus
+## (BUDGET_ALERTE - MARGE_ALERTE) × VITESSE_TRAQUE mètres de marche, soit 18 m.
+## Le budget se recharge tant qu'on voit le joueur ; épuisé, le rôdeur rentre.
+const BUDGET_ALERTE := 10.0
+const MARGE_ALERTE := 4.0
+
 @onready var agent: NavigationAgent3D = $NavigationAgent3D
 @onready var torche: SpotLight3D = $Torche
 ## Le lecteur d'animation n'existe que si le modèle en a un : la silhouette
@@ -109,6 +119,10 @@ var actif := false
 var en_poursuite := false
 ## Le dernier mètre : il fonce droit sur le joueur, hors carte.
 var charge := false
+## L'ÉTAU (jet 14) : prévenu par l'autre, il converge vers un point de contact.
+var en_alerte := false
+var cible_alerte := Vector3.ZERO
+var temps_alerte := 0.0
 ## Il a perdu le joueur et ratisse la zone, pièce par pièce.
 var en_battue := false
 var ancre_battue := Vector3.ZERO
@@ -155,6 +169,23 @@ func choisis_piece() -> void:
 	agent.target_position = destinations[piece_visee]
 
 
+## Le sas d'intro rejoint le monde du rôdeur une fois ses portes ouvertes
+## (jet 16) : il entre dans le ratissage de TOUS, et dans la ronde de ceux dont
+## c'est l'étage. Avant la clé, il en était exclu pour qu'aucun rôdeur ne fonce
+## se coincer contre la porte verrouillée.
+func reintegre(nom: String, pos: Vector3, plain_pied: bool) -> void:
+	toutes_les_pieces[nom] = pos
+	if _ma_ronde_est_de_plain_pied() == plain_pied:
+		destinations[nom] = pos
+
+
+## Mon étage, lu sur ma ronde : mes destinations sont toutes d'un même niveau.
+func _ma_ronde_est_de_plain_pied() -> bool:
+	for point in destinations.values():
+		return point.y < 1.0
+	return false
+
+
 func _physics_process(delta: float) -> void:
 	if not actif:
 		return
@@ -167,6 +198,8 @@ func _physics_process(delta: float) -> void:
 		poursuit(delta)
 	elif en_battue:
 		bat_la_zone(delta)
+	elif en_alerte:
+		converge(delta)
 	else:
 		if piece_a_eviter != "" \
 				and global_position.distance_to(depart_ronde) > DISTANCE_FIN_PROTECTION:
@@ -215,6 +248,8 @@ func maj_demarche() -> void:
 func allure() -> float:
 	if cachette_reperee != null:
 		return VITESSE_POURSUITE
+	if en_alerte:
+		return VITESSE_TRAQUE
 	if not en_poursuite:
 		return VITESSE_MARCHE
 	if is_zero_approx(temps_sans_voir):
@@ -227,9 +262,11 @@ func allure() -> float:
 func commence_poursuite() -> void:
 	en_poursuite = true
 	en_battue = false
+	en_alerte = false
 	temps_sans_voir = 0.0
 	fuite_extrapolee = false
 	garde_la_trace()
+	repere_le_joueur.emit(joueur.global_position)
 
 
 func poursuit(delta: float) -> void:
@@ -393,12 +430,51 @@ func garde_la_trace() -> void:
 	if p.distance_to(derniere_position_connue) > 0.5:
 		derniere_position_connue = p
 		agent.target_position = p
+		# L'étau, suivi vivant (jet 14, étape 2) : tant qu'on voit le joueur, on
+		# transmet sa position à l'autre rôdeur — il suit le mouvement au lieu de
+		# foncer sur le point de départ, et son budget d'alerte se recharge.
+		repere_le_joueur.emit(p)
 
 
 func abandonne() -> void:
 	en_poursuite = false
 	en_battue = false
 	charge = false
+	choisis_piece()
+
+
+## L'ÉTAU — prévenu par l'autre rôdeur (relais dans jeu.gd) : le joueur a été vu
+## là-bas. On ne s'en mêle que si l'on est tranquille en ronde, et seulement si
+## l'on peut arriver à temps pour être utile — sinon on reste sur sa ronde. Déjà
+## alerté, on rafraîchit la cible et on recharge le budget.
+func recois_alerte(ou: Vector3) -> void:
+	if not actif or en_poursuite or en_battue or cachette_reperee != null:
+		return
+	if not en_alerte:
+		var distance := distance_de_marche(global_position, ou)
+		if distance > (BUDGET_ALERTE - MARGE_ALERTE) * VITESSE_TRAQUE:
+			return
+		en_alerte = true
+	cible_alerte = ou
+	temps_alerte = BUDGET_ALERTE
+	agent.target_position = ou
+
+
+## Il converge vers le point de contact à l'allure de traque. Le joueur en vue,
+## c'est une vraie poursuite. Sinon, le budget épuisé, il reprend sa ronde.
+func converge(delta: float) -> void:
+	if voit_joueur():
+		commence_poursuite()
+		return
+	temps_alerte -= delta
+	if temps_alerte <= 0.0:
+		fin_alerte()
+
+
+## Budget épuisé sans avoir retrouvé le joueur : il lâche l'étau et reprend sa
+## ronde — qui puise dans les pièces de son étage, donc le ramène chez lui.
+func fin_alerte() -> void:
+	en_alerte = false
 	choisis_piece()
 
 

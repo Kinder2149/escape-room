@@ -48,7 +48,7 @@ func _process(_delta: float) -> bool:
 		_exige("tirage %d : sa ronde du haut ne connait que l'etage" % [essais + 1],
 			_toutes_au_niveau(haut.destinations, 3.2))
 		_exige("tirage %d : chacun connait tout le manoir pour ratisser" % [essais + 1],
-			bas.toutes_les_pieces.size() == 13 and haut.toutes_les_pieces.size() == 13)
+			bas.toutes_les_pieces.size() == 12 and haut.toutes_les_pieces.size() == 12)
 		jeu.queue_free()
 		jeu = null
 		essais += 1

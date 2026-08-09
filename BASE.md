@@ -1,6 +1,6 @@
 # BASE.md — Socle figé
 
-> Décisions gravées. Cascade les respecte à la lettre. On n'y retouche pas pendant la construction.
+> Décisions gravées. Respectées à la lettre à l'exécution. On n'y retouche pas pendant la construction.
 > Toute nouvelle idée passe par les « idées parquées » du contexte, pas ici.
 
 ---
@@ -84,6 +84,124 @@
 **Les emplacements :** **un seul emplacement par pièce et par type** — où se pose un coffre, où s'ouvre la porte rouge, où l'on se réveille. La porte rouge est toujours plaquée sur un **mur extérieur**. Chaque emplacement est dégagé et accessible : aucun coffre dans un meuble, aucun réveil dans un mur.
 
 **Ce que ça change :** le **bureau** n'est plus « la pièce de la porte rouge ». Il reste un cul-de-sac : selon le tirage il abritera la sortie (partie très dure), un coffre (dure), ou rien. La difficulté n'est plus fabriquée, elle est tirée au sort.
+
+---
+
+# Jet 17 — La carte *(clos le 28/07/2026)*
+
+> Troisième et dernière partie de la piste 3 (le fil rouge) : après les noms (jet 15) et la pièce d'intro (jet 16), le manoir se lit d'un coup d'œil. Découpage dans `PLAN.md`.
+
+## Le principe : lire le manoir, sans révéler la partie
+Une carte du manoir, **prise sur la table de l'intro**, affichée à **M**. Elle montre **les murs et les noms**, **jamais les objets** (coffres, coffre-fort, sortie) — sinon la recherche disparaît. Elle situe, elle ne résout pas.
+
+## La règle
+- **On prend la carte sur la table de l'intro** (E, comme un morceau). Sans elle, M ne fait rien.
+- **M ouvre/ferme un plan en surimpression** (dans l'interface, aucune scène nouvelle).
+- **Le plan** : chaque pièce à l'échelle, dans **sa teinte de sol** (code couleur du jet 10), avec **son nom**. **Rez à gauche, étage à droite**, côte à côte. Construit à partir des dalles de sol réelles — il colle toujours à la géométrie.
+- **« Tu es ici »** *(arbitrage Kinder)* : un point discret situe le joueur. Il ne révèle aucun objectif — on connaît déjà sa pièce par sa plaque.
+- **Le temps continue de tourner** *(arbitrage Kinder)* pendant qu'on lit la carte : un coup d'œil se paie, comme fouiller un coffre. Une carte qui met en pause rendrait la consultation gratuite.
+- **Deux morceaux** (rez / étage), lus à l'altitude. **Le troisième (cave) apparaîtra tout seul** le jour venu, jamais dessiné d'avance.
+
+## Ce qui ne change pas
+Aucune règle de jeu, aucun objet déplacé, aucune scène nouvelle, aucun chiffre d'équilibrage. Une aide de lecture, pas une mécanique.
+
+## Definition of done (jet 17)
+On prend la carte sur la table de l'intro ; M affiche le plan des deux niveaux — murs, noms, teintes — avec « tu es ici » ; **aucun objet n'y figure** ; le temps tourne pendant la consultation. Le filet reste vert.
+
+---
+
+# Jet 16 — La pièce d'introduction *(figé le 27/07/2026)*
+
+> Deuxième partie de la piste 3 (le fil rouge). Découpage dans `PLAN.md`. **Construit — étapes 1 et 2 faites (28/07/2026).** La carte (bouton M) sera le jet 17.
+
+## Le principe : apprendre le jeu dans une pièce sûre avant le manoir
+Le joueur se réveille **toujours dans une pièce d'introduction dédiée et fixe**, à part du manoir de jeu, **fermée par une porte verrouillée**. Il y apprend la boucle — ouvrir un coffre, prendre, ouvrir une porte — avant d'affronter le vrai manoir. Une fois dehors, la partie classique commence, avec son hasard habituel (objets, rôdeurs, sortie).
+
+**Révise la décision du 27/07 « pièce d'intro à emplacement tiré au sort »** *(arbitrage Kinder)* : la pièce devient un **lieu fixe et dédié**, pas une des pièces de jeu. Seul le point de départ devient fixe ; tout le reste garde son hasard.
+
+## La règle
+- **Le joueur naît toujours dans la pièce d'intro** (la Chambre réaffectée, plaque « Introduction »), exclue du tirage des objets.
+- **Il se réveille au fond de la pièce, face à elle** : la table (qui portera la carte, jet 17) droit devant, le coffre à droite, l'armoire-cachette à gauche, les portes au loin. La pièce ne contient QUE **cachette + coffre + table**, rien d'autre.
+- **Deux portes verrouillées** scellent la pièce (une au sud vers le couloir, une à l'est vers la salle de bain) ; une **clé d'intro dédiée**, dans le coffre, les ouvre **toutes les deux d'un coup**.
+- **Ouvrir le coffre → prendre la clé → ouvrir une porte (les deux s'ouvrent) → déboucher dans le manoir**, où la chaîne classique reprend.
+- **Scellement conditionnel** *(arbitrage Kinder, 28/07/2026 — révise le scellement permanent de l'étape 2a)* : tant que les portes sont fermées, les rôdeurs sont exclus du sas (ils n'y entrent pas, ne s'y coincent pas). **La clé lève le scellement** : la pièce redevient une pièce comme les autres — les rôdeurs peuvent t'y suivre, et la **double porte devient ton échappatoire**, pas un cul-de-sac piège.
+
+## Le point figé rouvert
+Le jet 5 avait supprimé toute porte verrouillée au départ (« ça n'a plus de sens quand on ne sait pas où l'on commence »). La pièce d'intro la réintroduit — légitimement, puisqu'on sait désormais où l'on commence.
+
+## Definition of done (jet 16)
+Le joueur se réveille enfermé au fond de la pièce, ouvre le coffre (face à lui), prend la clé, ouvre les deux portes d'un coup, et débouche dans le manoir où la partie classique se joue et se gagne. **Une fois les portes ouvertes, un rôdeur peut le suivre dans le sas, et il s'échappe par l'autre porte.** **Le filet reste vert.**
+
+---
+
+# Jet 15 — Les noms de pièces *(clos le 27/07/2026)*
+
+> Première partie de la piste 3 (le fil rouge) de la question ouverte (voir `PROJET_CONTEXTE.md`, « La réponse — trois pistes »). Découpage dans `PLAN.md`. **Clos le 27/07/2026 : les 13 pièces nommées sur leur mur du fond, la pièce du réveil comprise.**
+
+## Le principe : le manoir se lit, sans cesser d'être sombre
+Le fil rouge est aveugle (constat 3) : on balaie treize pièces sans savoir laquelle est laquelle. On commence par le plus simple — **chaque pièce dit son nom**. Pas de quoi rallonger la chaîne : de quoi la rendre lisible.
+
+## La règle
+- **Chaque pièce porte une plaque** — un texte 3D **ombré** : noir dans la pénombre, **révélé quand la torche passe dessus**. Jamais allumé — la pénombre reste intacte (contrairement à la porte SORTIE, qui brille exprès).
+- **Visible en entrant, pas à chercher** *(arbitrage Kinder)* : la plaque est placée près de l'entrée de la pièce, là où le regard tombe en entrant.
+- **Le nom vient de la pièce** : chaque Pièce porte un **nom d'affichage** propre (« Salle à manger »), les noms internes étant en CamelCase sans accent. Une seule source.
+- **La pièce du réveil peut rester muette** — à trancher à l'équilibrage : la nommer entamerait le mystère « je ne sais pas où je suis ».
+
+## Ce qui ne change pas
+Aucune règle de jeu, aucun rôdeur, aucun chiffre. **Aucune scène nouvelle** : la plaque vit dans la scène Pièce existante. La carte et la pièce d'introduction (jet 16) ne sont pas de ce jet.
+
+## Definition of done (jet 15)
+Dans chaque pièce, le nom se lit en entrant, à la torche ; noir dans le noir ; la pénombre et la difficulté inchangées. Le filet reste vert.
+
+---
+
+# Jet 14 — L'étau *(clos le 27/07/2026)*
+
+> Deuxième des trois pistes de la question ouverte (voir `PROJET_CONTEXTE.md`, « La réponse — trois pistes »). Découpage dans `PLAN.md`. **Clos le 27/07/2026 : budget de 10 s validé, aucun exploit rencontré.**
+
+## Le principe : se faire voir doit coûter
+Aujourd'hui les deux rôdeurs s'ignorent — un rôdeur en double, jamais un étau. On veut qu'un rôdeur qui repère le joueur **prévienne l'autre**, qui rapplique s'il peut arriver à temps pour servir. Même en semant celui qui suit, on a réveillé le second : une vague de danger qui monte au repérage et retombe quand on tient bon.
+
+## La règle
+- **Un rôdeur qui repère le joueur annonce sa position ; le Jeu la relaie à l'autre.**
+- **Le rôdeur prévenu ne s'engage que s'il est tranquille (en ronde) et peut arriver utilement** : au plus **18 m de marche réelle** (budget 10 s moins 4 s de marge, à l'allure de traque 3 m/s). Trop loin, il **ignore** et poursuit sa ronde — jamais figé.
+- **Il converge à l'allure de traque**, vers la **position vivante** du joueur tant que le poursuivant le voit, **figée sur le dernier point connu** dès qu'il le perd *(le suivi vivant est l'étape 2)*.
+- **Le budget de 10 s se recharge tant qu'un rôdeur voit le joueur.** Vraiment perdu, il s'épuise → le rôdeur **reprend sa ronde chez lui** (il remonte donc sur son étage de lui-même, par le mécanisme de ronde existant).
+- **Il peut quitter son étage** le temps de l'alerte (l'étau croise donc les niveaux quand on est près d'un escalier), mais y **retourne** à l'expiration.
+- **S'il voit le joueur en chemin**, il bascule en **vraie poursuite**.
+- **Le son de danger couvre aussi l'état « alerté »** : la tension tient tant qu'un rôdeur est sur le joueur.
+
+## Ce qui ne change pas
+Les vitesses, la vision, la battue de 30 s du poursuivant, les neuf cachettes, le tirage, la chaîne, le geste qui expose (jet 13). **Aucune scène nouvelle** : on ajoute un état au rôdeur et un relais dans le Jeu. **Aucun chiffre gelé touché** — on réutilise l'allure de traque (3 m/s) et on ajoute le budget d'alerte (10 s) et sa marge (4 s).
+
+## Défaut corrigé en cours de jet : les rôdeurs se bloquaient l'un l'autre
+L'étau, en faisant converger les deux rôdeurs au même endroit, a révélé qu'ils se **percutaient et restaient figés** — tout (rôdeurs, joueur, murs) partageait le calque de collision 1. Corrigé **à la source** (`rodeur_incarne.tscn`) : les rôdeurs passent sur **leur propre calque** (calque 3), masque inchangé — ils heurtent toujours murs et joueur, mais **plus l'un l'autre**. Le joueur reçoit ce calque dans son masque (`joueur.tscn`) pour continuer à les heurter. Ils peuvent désormais **se chevaucher brièvement** au moment où ils coincent le joueur, mais ne se **bloquent plus jamais**. Un futur rôdeur de cave héritera du bon calque.
+
+## Definition of done (jet 14)
+Un rôdeur qui voit le joueur réveille l'autre ; le prévenu rejoint s'il peut arriver utilement, sinon reste sur sa ronde ; il suit la position vivante tant qu'on voit le joueur ; il rentre chez lui à l'expiration du budget ; il bascule en poursuite s'il voit le joueur ; **deux rôdeurs ne se bloquent jamais l'un l'autre**. **Le filet reste vert.** À l'équilibrage : le budget se règle, et l'on guette que « se faire voir pour vider un étage » ne devienne pas rentable.
+
+---
+
+# Jet 13 — Le geste qui expose *(clos le 27/07/2026)*
+
+> Première des trois pistes de la question ouverte (voir `PROJET_CONTEXTE.md`, « La réponse — trois pistes »). Découpage dans `PLAN.md`. **Clos le 27/07/2026 : durée de fouille 2 s et geste interruptible validés à l'équilibrage.**
+
+## Le principe : fouiller doit coûter un moment de vulnérabilité
+Aujourd'hui, ouvrir un coffre et prendre un objet sont instantanés — donc gratuits. Le jeu a bâti une menace (deux rôdeurs, neuf cachettes) que la vitesse du joueur désamorce : plus rapide, jamais pressé par le temps, il n'a aucune raison de se cacher. **On donne un coût au geste de fouille** : le temps où l'on s'affaire, on est cloué sur place. La vitesse figée du rôdeur (4,0) suffit alors à punir qui fouille au mauvais moment, et les neuf cachettes retrouvent un sens. Le seul verbe « chercher » devient **chercher au bon moment**.
+
+## La règle
+- **Ouvrir un coffre lance une fouille** : le joueur est **cloué sur place**, le **regard fixe** — il ne peut plus regarder autour de lui. Le couvercle ne bascule qu'à la **fin** : le paiement vient après l'exposition. **Prendre le contenu, coffre déjà ouvert, est instantané** *(arbitrage Kinder)* — on ne s'affaire qu'à l'ouverture.
+- **Une barre à l'écran** montre l'ouverture en cours et son avancement : le regard étant fixe, c'est le seul retour visuel qui confirme le geste.
+- **Interruptible** *(arbitrage Kinder)* : appuyer sur une direction **annule** la fouille et rend la main aussitôt pour fuir. Le coffre reste fermé — c'est le coût de décrocher.
+- **Le danger se lit à l'oreille, pas à l'œil** *(arbitrage Kinder)* : le regard étant fixe, c'est le **son de « vue »** qui dit au joueur de décrocher et de courir. **Conséquence assumée : le ressenti de la piste ne se juge pleinement qu'avec ce son.** *(Trois sons temporaires — vue, poursuite, attrape — câblés le 27/07/2026 pour rendre l'équilibrage possible ; les vrais sons de Kinder les remplaceront. Voir `PLAN.md`, étape 2.)*
+- **Jamais en se cachant** : entrer et sortir d'un meuble reste instantané et sûr. Les deux gestes restent contraires. **Jamais sur la porte de sortie** : la victoire n'est pas une fouille.
+- **Portée du jet** : l'ouverture des coffres ordinaires. Prendre un morceau ou le badge, et l'ouverture du coffre-fort verrouillé (décidée par le Jeu), restent instantanés.
+
+## Ce qui ne change pas
+Les vitesses, la vision, la battue, les neuf cachettes, le tirage, la chaîne d'objectifs. L'étau (piste 2) n'est pas de ce jet. **Aucune scène nouvelle** : on modifie le joueur, le coffre et le Jeu, et on ajoute une barre à l'interface existante. **Aucun chiffre gelé touché** — on ajoute seulement la durée de la fouille, à régler au ressenti.
+
+## Definition of done (jet 13)
+Regard fixe pendant l'ouverture, avec sa barre d'avancement ; une direction l'annule et libère aussitôt, coffre fermé ; le couvercle ne bascule qu'au terme d'une fouille menée jusqu'au bout ; prendre le contenu reste instantané ; un rôdeur qui atteint le joueur pendant qu'il ouvre l'attrape. **Le filet reste vert** (les 21 séries, vérifiées le 27/07/2026). **Équilibrage fait le 27/07/2026 : durée de fouille 2 s et geste interruptible, les deux validés.**
 
 ---
 

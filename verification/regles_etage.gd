@@ -5,13 +5,13 @@ extends SceneTree
 #  - la porte rouge est de plain-pied (jamais a l'etage) ;
 #  - au moins un coffre est a l'etage ;
 #  - tout est pose sur un repere, sortie et coffres dans 3 pieces differentes ;
-#  - le reveil peut monter (on verifie que ca arrive au moins une fois).
+#  - le reveil est TOUJOURS le sas d'intro (la Chambre, jet 16), jamais ailleurs.
 
 var jeu: Node3D = null
 var frames := 0
 var essais := 0
 var echecs := 0
-var reveils_en_haut := 0
+var reveils_hors_intro := 0
 var coffres_en_haut_total := 0
 var sorties := {}
 
@@ -50,16 +50,16 @@ func _process(_delta: float) -> bool:
 	_exige("tirage %d : AU MOINS UN DES TROIS OBJETS A L'ETAGE (%s / %s / %s)"
 		% [essais + 1, pa, pb, pf], n_haut >= 1)
 	coffres_en_haut_total += n_haut
-	if _en_haut(pr):
-		reveils_en_haut += 1
+	if pr != "Chambre":
+		reveils_hors_intro += 1
 	sorties[piece_sortie] = true
 
 	jeu.queue_free()
 	jeu = null
 	essais += 1
 	if essais >= 30:
-		_exige("le joueur se reveille parfois a l'etage (%d fois sur 30)" % reveils_en_haut,
-			reveils_en_haut > 0)
+		_exige("le joueur se reveille TOUJOURS dans le sas d'intro (%d ecart(s) sur 30)"
+			% reveils_hors_intro, reveils_hors_intro == 0)
 		_exige("la sortie varie bien (%d pieces differentes sur 30)" % sorties.size(),
 			sorties.size() >= 5)
 		print("   (coffres a l'etage : %.2f par partie en moyenne)"

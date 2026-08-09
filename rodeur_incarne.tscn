@@ -1,44 +1,24 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene format=3 uid="uid://by7moljvth84m"]
 
-; Le rôdeur incarné (jet 11) : même script, même capsule, même torche que le
-; rôdeur d'origine — seul le modèle change. Un pantin de 1,70 m avec un vrai
-; squelette et trois démarches.
-; Il reste une OMBRE, mais plus un aplat noir : trois teintes sombres portées
-; par le modèle lui-même — corps presque noir, toile de sac sur la tête et les
-; avant-bras, mains et orteils un peu plus clairs. De loin c'est une
-; silhouette ; sous la torche, on lit sa démarche.
-; Il regarde vers +Z d'origine ; le manoir attend des personnages tournés
-; vers -Z, d'où le demi-tour du modèle.
-
-[ext_resource type="Script" path="res://rodeur.gd" id="1_rodeur"]
-[ext_resource type="PackedScene" path="res://rodeur_perso.glb" id="2_modele"]
+[ext_resource type="Script" uid="uid://cwb7bt3d6o8r6" path="res://rodeur.gd" id="1_rodeur"]
+[ext_resource type="PackedScene" uid="uid://bv6wcd4165rh4" path="res://rodeur_perso.glb" id="2_modele"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_rodeur"]
 radius = 0.25
 height = 1.7
 
-[node name="Rodeur" type="CharacterBody3D"]
+[node name="Rodeur" type="CharacterBody3D" unique_id=1219302727]
+collision_layer = 4
 script = ExtResource("1_rodeur")
 
-; Réduit à 0,9 (1,53 m au lieu de 1,70) : un pantin un peu plus petit qu'un
-; homme, ce qui est plus juste pour une poupée — et 10 % de moins à faire
-; passer dans les embrasures. La capsule et la torche ne bougent pas : elles
-; portent le comportement, et on ne veut rien changer d'autre.
-[node name="Modele" parent="." instance=ExtResource("2_modele")]
+[node name="Modele" parent="." unique_id=1913366989 instance=ExtResource("2_modele")]
 transform = Transform3D(-0.9, 0, 0, 0, 0.9, 0, 0, 0, -0.9, 0, 0, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=249540174]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
 shape = SubResource("CapsuleShape3D_rodeur")
 
-; La lanterne est portée DEVANT lui, à hauteur de tête (jet 11). Logée dans
-; son torse, elle était coupée par ses bras à chaque pas et le faisceau
-; clignotait. C'est à 1,44 m que son corps est le plus mince — il n'avance
-; que de 0,31 m là, contre 0,58 au niveau des bras : la lampe y passe devant
-; sans jamais être croisée.
-; Elle dépasse sa capsule de 9 cm : collé de face à un mur, le faisceau
-; s'éteindra brièvement. Compromis assumé.
-[node name="Torche" type="SpotLight3D" parent="."]
+[node name="Torche" type="SpotLight3D" parent="." unique_id=842226895]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.44, -0.34)
 light_color = Color(1, 0.95, 0.82, 1)
 light_energy = 5.0
@@ -47,7 +27,7 @@ spot_range = 10.0
 spot_angle = 25.0
 spot_angle_attenuation = 0.7
 
-[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="." unique_id=1118205546]
 path_desired_distance = 0.2
 target_desired_distance = 0.6
 path_height_offset = 0.2

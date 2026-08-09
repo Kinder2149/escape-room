@@ -1,0 +1,39 @@
+[gd_scene load_steps=5 format=3]
+
+; Un portail vers une autre scène : un panneau (couleur dev) qui bloque, et une
+; zone de passage derrière. Ouvert, on le franchit et on bascule de scène.
+
+[ext_resource type="Script" path="res://portail.gd" id="1_portail"]
+
+[sub_resource type="StandardMaterial3D" id="mat_portail"]
+albedo_color = Color(0.4, 0.26, 0.14, 1)
+roughness = 0.85
+
+[sub_resource type="BoxMesh" id="mesh_panneau"]
+material = SubResource("mat_portail")
+size = Vector3(1.6, 2.2, 0.15)
+
+[sub_resource type="BoxShape3D" id="shape_panneau"]
+size = Vector3(1.6, 2.2, 0.15)
+
+[sub_resource type="BoxShape3D" id="shape_zone"]
+size = Vector3(1.5, 2.2, 1.2)
+
+[node name="Portail" type="Node3D"]
+script = ExtResource("1_portail")
+
+[node name="Panneau" type="StaticBody3D" parent="."]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Panneau"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
+mesh = SubResource("mesh_panneau")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Panneau"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
+shape = SubResource("shape_panneau")
+
+[node name="Zone" type="Area3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Zone"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
+shape = SubResource("shape_zone")

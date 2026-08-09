@@ -220,6 +220,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 1.1, 1.5)
 operation = 2
 size = Vector3(1.6, 2.2, 0.6)
 
+; Jet 16 : seconde porte du sas d'intro (Sud1) vers la salle de bain (Sud2).
+; Une fois la clé passée, la pièce s'ouvre des deux côtés — échappatoire.
+[node name="PorteSud1VersSud2" type="CSGBox3D" parent="Navigation/Batiment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.1, 1.1, 3.5)
+operation = 2
+size = Vector3(0.6, 2.2, 1.6)
+
 [node name="PorteSud2VersCouloir" type="CSGBox3D" parent="Navigation/Batiment"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, 1.1, 1.5)
 operation = 2
@@ -634,6 +641,7 @@ material_override = SubResource("Sol_Circulation")
 ; portent les coordonnées (position + orientation, reprises du jet 5).
 
 [node name="Entree" parent="." instance=ExtResource("3_piece")]
+nom_affiche = "Entrée"
 
 [node name="Coffre" parent="Entree" index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -7.5)
@@ -647,6 +655,9 @@ transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -7.5, 0, -8.75)
 [node name="Reveil" parent="Entree" index="2"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -7.5, 0, -5)
 
+[node name="Plaque" parent="Entree" index="3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 2, -8.7)
+
 [node name="Cuisine" parent="." instance=ExtResource("3_piece")]
 
 [node name="Coffre" parent="Cuisine" index="0"]
@@ -657,6 +668,9 @@ transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -2.8, 0, -8.75)
 
 [node name="Reveil" parent="Cuisine" index="2"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -1, 0, -3.5)
+
+[node name="Plaque" parent="Cuisine" index="3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, 2, -8.7)
 
 [node name="Salon" parent="." instance=ExtResource("3_piece")]
 
@@ -669,18 +683,26 @@ transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 5, 0, -8.75)
 [node name="Reveil" parent="Salon" index="2"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 6.8, 0, -3)
 
+[node name="Plaque" parent="Salon" index="3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.8, 2, -8.7)
+
 [node name="Chambre" parent="." instance=ExtResource("3_piece")]
+nom_affiche = "Introduction"
 
 [node name="Coffre" parent="Chambre" index="0"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -9.8, 0, 4.5)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -9.8, 0, 4.5)
 
 [node name="Sortie" parent="Chambre" index="1"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, 8.75)
 
 [node name="Reveil" parent="Chambre" index="2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, 4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 0, 7.5)
+
+[node name="Plaque" parent="Chambre" index="3"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -7.5, 2, 8.7)
 
 [node name="SalleDeBain" parent="." instance=ExtResource("3_piece")]
+nom_affiche = "Salle de bain"
 
 [node name="Coffre" parent="SalleDeBain" index="0"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 1, 0, 7.5)
@@ -690,6 +712,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 8.75)
 
 [node name="Reveil" parent="SalleDeBain" index="2"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 4)
+
+[node name="Plaque" parent="SalleDeBain" index="3"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -0.7, 2, 8.7)
 
 [node name="Bureau" parent="." instance=ExtResource("3_piece")]
 
@@ -702,10 +727,14 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.8, 0, 8.75)
 [node name="Reveil" parent="Bureau" index="2"]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 8.5, 0, 3.5)
 
+[node name="Plaque" parent="Bureau" index="3"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 10.7, 2, 5.2)
+
 ; Les trois pièces de l'aile Est (jet 7). Portes rouges plaquées aux murs
 ; extérieurs (nord pour les deux pièces nord, sud pour la bibliothèque).
 
 [node name="SalleAManger" parent="." instance=ExtResource("3_piece")]
+nom_affiche = "Salle à manger"
 
 [node name="Coffre" parent="SalleAManger" index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.8, 0, -7.5)
@@ -715,6 +744,9 @@ transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 13, 0, -8.75)
 
 [node name="Reveil" parent="SalleAManger" index="2"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 13.9, 0, -2.6)
+
+[node name="Plaque" parent="SalleAManger" index="3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.5, 2, -8.7)
 
 [node name="Buanderie" parent="." instance=ExtResource("3_piece")]
 
@@ -727,7 +759,11 @@ transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 18.4, 0, -8.75)
 [node name="Reveil" parent="Buanderie" index="2"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 18.4, 0, -6.5)
 
+[node name="Plaque" parent="Buanderie" index="3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 2, -8.7)
+
 [node name="Bibliotheque" parent="." instance=ExtResource("3_piece")]
+nom_affiche = "Bibliothèque"
 
 [node name="Coffre" parent="Bibliotheque" index="0"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 18.5, 0, 7.5)
@@ -738,12 +774,16 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0, 8.75)
 [node name="Reveil" parent="Bibliotheque" index="2"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 0, 3)
 
+[node name="Plaque" parent="Bibliotheque" index="3"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 15, 2, 8.7)
+
 ; ---- LES QUATRE PIÈCES DE L'ÉTAGE (jet 8) ----
 ; Leur repère « Sortie » est posé valide (mur nord, extérieur) mais n'est
 ; JAMAIS tiré : la porte rouge reste de plain-pied. La règle se déduit de
 ; l'altitude du repère de réveil — voir jeu.gd, aucune liste à tenir.
 
 [node name="SalleDEau" parent="." instance=ExtResource("3_piece")]
+nom_affiche = "Salle d'eau"
 
 [node name="Coffre" parent="SalleDEau" index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.5, 3.2, -7.5)
@@ -754,7 +794,11 @@ transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -7.5, 3.2, -8.75)
 [node name="Reveil" parent="SalleDEau" index="2"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -7.5, 3.2, -3)
 
+[node name="Plaque" parent="SalleDEau" index="3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 5.2, -8.7)
+
 [node name="ChambreAmis" parent="." instance=ExtResource("3_piece")]
+nom_affiche = "Chambre d'amis"
 
 [node name="Coffre" parent="ChambreAmis" index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 3.2, -7.5)
@@ -765,7 +809,11 @@ transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -0.7, 3.2, -8.75)
 [node name="Reveil" parent="ChambreAmis" index="2"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -0.7, 3.2, -3)
 
+[node name="Plaque" parent="ChambreAmis" index="3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, 5.2, -8.7)
+
 [node name="ChambreMaitre" parent="." instance=ExtResource("3_piece")]
+nom_affiche = "Chambre de maître"
 
 [node name="Coffre" parent="ChambreMaitre" index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.5, 3.2, -7.5)
@@ -775,6 +823,9 @@ transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 6.8, 3.2, -8.75)
 
 [node name="Reveil" parent="ChambreMaitre" index="2"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 6.8, 3.2, -3)
+
+[node name="Plaque" parent="ChambreMaitre" index="3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.8, 5.2, -8.7)
 
 [node name="Dressing" parent="." instance=ExtResource("3_piece")]
 
@@ -786,3 +837,6 @@ transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 14, 3.2, -8.75)
 
 [node name="Reveil" parent="Dressing" index="2"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 14, 3.2, -3)
+
+[node name="Plaque" parent="Dressing" index="3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 5.2, -8.7)

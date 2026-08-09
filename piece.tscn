@@ -1,15 +1,19 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://bc4ld3dsxjdkw"]
 
-; Une pièce de la maison : trois repères (coffre, porte rouge, réveil).
-; Posée une fois par pièce dans maison.tscn — voir piece.gd.
+[ext_resource type="Script" uid="uid://dfxi02ou10edj" path="res://piece.gd" id="1_piece"]
 
-[ext_resource type="Script" path="res://piece.gd" id="1_piece"]
-
-[node name="Piece" type="Node3D" groups=["pieces"]]
+[node name="Piece" type="Node3D" unique_id=1058380463 groups=["pieces"]]
 script = ExtResource("1_piece")
 
-[node name="Coffre" type="Marker3D" parent="."]
+[node name="Coffre" type="Marker3D" parent="." unique_id=638583144]
 
-[node name="Sortie" type="Marker3D" parent="."]
+[node name="Sortie" type="Marker3D" parent="." unique_id=678392574]
 
-[node name="Reveil" type="Marker3D" parent="."]
+[node name="Reveil" type="Marker3D" parent="." unique_id=272858028]
+
+[node name="Plaque" type="Label3D" parent="." unique_id=255296678]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+pixel_size = 0.004
+shaded = true
+text = "Pièce"
+font_size = 64

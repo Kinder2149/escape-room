@@ -11,6 +11,10 @@ extends Node3D
 ## groupe « pieces ») : ici on tire et on pose, on ne connaît aucune coordonnée.
 
 const MORCEAUX_REQUIS := 2
+## La pièce d'introduction (jet 16) : un sas fixe et dédié où le joueur se
+## réveille toujours. C'est la Chambre, réaffectée à ce rôle — elle sort du
+## hasard des objets, le joueur y naît à chaque partie.
+const PIECE_INTRO := "Chambre"
 ## En deçà de cette distance de marche (la vraie, en suivant portes et
 ## couloirs), un départ du rôdeur est trop proche : il pourrait être sur le
 ## joueur avant qu'il ait compris où il se réveille.
@@ -40,15 +44,31 @@ const DUREE_FONDU_REVEIL := 1.0
 @onready var message_audit: Label = $Interface/MessageAudit
 @onready var message_reveil: Label = $Interface/MessageReveil
 @onready var panneau: ColorRect = $Interface/Panneau
+@onready var barre_fouille: ProgressBar = $Interface/BarreFouille
+## Sons temporaires (jet 13), le temps que Kinder pose les vrais. Ils s'enchaînent
+## sans jamais se chevaucher : « vue » au repérage, puis « poursuite » en boucle
+## une fois « vue » finie, « attrapé » à la capture. Voir maj_son_danger.
+## À remplacer sans douleur — un « ambiance » viendra combler le silence.
+@onready var son_vue: AudioStreamPlayer = $SonVue
+@onready var son_poursuite: AudioStreamPlayer = $SonPoursuite
+@onready var son_attrape: AudioStreamPlayer = $SonAttrape
 
 ## Émis quand le joueur appuie sur une touche devant le panneau d'accueil.
 signal entree_demandee_au_panneau
+
+## L'état du son de danger : calme, « vue » qui joue, puis poursuite en boucle.
+## Vue et poursuite ne se chevauchent jamais (voir maj_son_danger).
+enum EtatSon { CALME, VU, POURSUITE }
+var etat_son := EtatSon.CALME
 
 var partie_gagnee := false
 var partie_perdue := false
 var morceaux := 0
 ## Le badge, tiré du coffre-fort : le seul objet qui ouvre la porte rouge.
 var badge := false
+## La clé d'intro, tirée du coffre du sas : le seul objet qui ouvre la porte du
+## sas d'introduction (jet 16). Le joueur naît enfermé, elle le libère.
+var cle_intro := false
 var minuteur_refus: Tween = null
 ## La pièce du réveil, retenue entre le tirage et la pose du rôdeur.
 var piece_reveil: Node3D = null
@@ -67,6 +87,7 @@ func _ready() -> void:
 	message_reveil.hide()
 	fente.hide()
 	panneau.hide()
+	barre_fouille.hide()
 	maj_compteur()
 
 	var avec_panneau := est_la_vraie_partie()
@@ -79,6 +100,12 @@ func _ready() -> void:
 		coffre.morceau_pris.connect(_on_morceau_pris)
 	$CoffreFort.tentative_ouverture.connect(_on_tentative_coffre_fort)
 	$CoffreFort.badge_pris.connect(_on_badge_pris)
+	$CoffreIntro.cle_intro_prise.connect(_on_cle_intro_prise)
+	for porte in get_tree().get_nodes_in_group("portes_intro"):
+		porte.tentative_ouverture.connect(_on_tentative_porte_intro)
+	$CarteObjet.carte_prise.connect(_on_carte_prise)
+	# Le bouton développeur ouvre la porte-portail vers le quartier de jeux (à part).
+	$BoutonDev.active.connect(func() -> void: $PortailDev.ouvre())
 	$Joueur.cible_changee.connect(_on_cible_changee)
 	$Joueur.cache_change.connect(_on_cache_change)
 	$Sortie.tentative_ouverture.connect(_on_tentative_ouverture)
@@ -88,6 +115,9 @@ func _ready() -> void:
 
 	for rodeur in rodeurs():
 		rodeur.joueur_attrape.connect(_on_joueur_attrape)
+		rodeur.repere_le_joueur.connect(_on_rodeur_repere.bind(rodeur))
+	son_vue.finished.connect(_on_son_vue_fini)
+	son_poursuite.finished.connect(_on_son_poursuite_fini)
 
 	# Les rôdeurs ne peuvent ni vérifier une ligne de vue ni chercher leur
 	# chemin avant que la maison ait ses murs et sa carte.
@@ -107,8 +137,76 @@ func _ready() -> void:
 	lance_les_rodeurs()
 
 
+## La barre de fouille suit l'ouverture d'un coffre : elle apparaît le temps que
+## le joueur s'affaire et se remplit jusqu'à ce que le couvercle bascule. Le
+## regard étant fixe, c'est le seul retour à l'écran qui confirme le geste.
+func _process(_delta: float) -> void:
+	if $Joueur.est_en_fouille():
+		barre_fouille.value = $Joueur.fouille_fraction() * 100.0
+		barre_fouille.show()
+	else:
+		barre_fouille.hide()
+	maj_son_danger()
+
+
+## Le son du danger, en trois temps qui ne se chevauchent jamais :
+## repéré → « vue » (un coup) ; « vue » finie et le rôdeur toujours sur toi →
+## « poursuite » en boucle ; le rôdeur reprend sa ronde normale (il t'a vraiment
+## perdu) → silence. La tension tient donc pendant la BATTUE — c'est là surtout
+## qu'on te cherche encore. Un seul état pour les deux rôdeurs.
+## (À terme, le silence deviendra « ambiance ».)
+func maj_son_danger() -> void:
+	match etat_son:
+		EtatSon.CALME:
+			if un_rodeur_alerte():
+				son_vue.play()
+				etat_son = EtatSon.VU
+		EtatSon.POURSUITE:
+			if not un_rodeur_alerte():
+				son_poursuite.stop()
+				etat_son = EtatSon.CALME
+
+
+## Un rôdeur est-il « sur toi » — en poursuite, en battue, ou en route pour ouvrir
+## la cachette où il t'a vu entrer ? Tant qu'il n'est pas revenu à sa ronde
+## normale, il te cherche encore : c'est pendant la BATTUE, surtout, que le son
+## doit tenir. Il ne retombe qu'à l'abandon, quand la ronde reprend.
+func un_rodeur_alerte() -> bool:
+	for rodeur in rodeurs():
+		if rodeur.actif and (rodeur.en_poursuite or rodeur.en_battue \
+				or rodeur.en_alerte or rodeur.cachette_reperee != null):
+			return true
+	return false
+
+
+## « Vue » vient de finir : si l'on est toujours chassé, la poursuite prend le
+## relais en boucle ; sinon on retombe dans le calme. Les deux ne se
+## superposent donc jamais.
+func _on_son_vue_fini() -> void:
+	if un_rodeur_alerte():
+		son_poursuite.play()
+		etat_son = EtatSon.POURSUITE
+	else:
+		etat_son = EtatSon.CALME
+
+
+## La boucle de poursuite : le fichier temporaire ne boucle pas seul, on le
+## relance tant qu'on reste en poursuite.
+func _on_son_poursuite_fini() -> void:
+	if etat_son == EtatSon.POURSUITE and un_rodeur_alerte():
+		son_poursuite.play()
+
+
 func rodeurs() -> Array:
 	return get_tree().get_nodes_in_group("rodeurs")
+
+
+## L'étau (jet 14) : un rôdeur a vu le joueur, on prévient les autres de sa
+## position. Celui qui a vu poursuit déjà — inutile de se prévenir soi-même.
+func _on_rodeur_repere(ou: Vector3, emetteur: Node) -> void:
+	for rodeur in rodeurs():
+		if rodeur != emetteur:
+			rodeur.recois_alerte(ou)
 
 
 ## Sommes-nous la vraie partie, ou une sonde nous a-t-elle instanciés à la main ?
@@ -183,7 +281,10 @@ func _unhandled_input(evenement: InputEvent) -> void:
 func lance_les_rodeurs() -> void:
 	var niveaux := niveaux_de_pieces()
 	var liste := rodeurs()
-	var partout := points_des(pieces())
+	# Le sas d'intro est scellé (jet 16) : les rôdeurs ne le rôdent ni ne le
+	# ratissent jamais, sinon ils fonceraient se coincer contre la porte
+	# verrouillée. On ne leur donne donc que les pièces DE JEU, ici et par niveau.
+	var partout := points_des(pieces_de_jeu())
 	for i in liste.size():
 		var chez_lui: Array = niveaux[i % niveaux.size()]
 		place_rodeur(liste[i], chez_lui)
@@ -195,7 +296,8 @@ func lance_les_rodeurs() -> void:
 ## l'altitude des repères suffit — la cave s'y rangera d'elle-même.
 func niveaux_de_pieces() -> Array:
 	var par_altitude := {}
-	for piece in pieces():
+	# Le sas d'intro exclu (jet 16) : il ne fait partie de la ronde d'aucun étage.
+	for piece in pieces_de_jeu():
 		var etage := int(round(piece.reveil.global_position.y / 3.2))
 		if not par_altitude.has(etage):
 			par_altitude[etage] = []
@@ -231,8 +333,9 @@ func affiche_audit() -> void:
 ##    on meurt avant d'avoir bougé (voir place_rodeur) ;
 ##  - un coffre peut tomber dans la pièce de réveil : c'est de la chance.
 func tire_au_sort() -> void:
-	var de_plain_pied := pieces().filter(est_de_plain_pied)
-	var a_l_etage := pieces().filter(func(piece: Node3D) -> bool:
+	var jouables := pieces_de_jeu()
+	var de_plain_pied := jouables.filter(est_de_plain_pied)
+	var a_l_etage := jouables.filter(func(piece: Node3D) -> bool:
 		return not est_de_plain_pied(piece))
 
 	var piece_sortie: Node3D = de_plain_pied.pick_random()
@@ -242,7 +345,7 @@ func tire_au_sort() -> void:
 	# L'une d'elles est forcément à l'étage — c'est ce qui donne une raison de
 	# monter. Lequel des trois y tombe est ensuite tiré au sort : le coffre-fort
 	# n'est pas plus souvent en haut qu'un coffre ordinaire.
-	var restantes := pieces()
+	var restantes := jouables.duplicate()
 	restantes.erase(piece_sortie)
 	var candidats_en_haut := a_l_etage.filter(func(piece: Node3D) -> bool:
 		return piece != piece_sortie)
@@ -256,12 +359,15 @@ func tire_au_sort() -> void:
 	pose($CoffreB, trois[1].coffre)
 	pose($CoffreFort, trois[2].coffre)
 
-	var ou_se_reveiller := pieces()
-	ou_se_reveiller.erase(piece_sortie)
-	piece_reveil = ou_se_reveiller.pick_random()
+	# Le joueur se réveille TOUJOURS dans le sas d'introduction (jet 16), un lieu
+	# fixe et dédié — plus dans une pièce au hasard.
+	piece_reveil = piece_intro()
 	# Le joueur se pose légèrement au-dessus du sol : il tombe dessus à la
 	# première image de physique.
 	pose($Joueur, piece_reveil.reveil, Vector3.UP * 0.1)
+	# Le coffre du sas, posé sur le repère de coffre du sas : il contient la clé
+	# d'intro. Fixe, hors du tirage — le sas ne varie pas.
+	pose($CoffreIntro, piece_reveil.coffre)
 
 
 ## Le niveau d'une pièce se lit à l'altitude de son repère de réveil.
@@ -305,6 +411,21 @@ func distance_de_marche(depuis: Vector3, vers: Vector3) -> float:
 
 func pieces() -> Array:
 	return get_tree().get_nodes_in_group("pieces")
+
+
+## La pièce d'introduction, réaffectée : le joueur s'y réveille toujours.
+func piece_intro() -> Node3D:
+	for piece in pieces():
+		if String(piece.name) == PIECE_INTRO:
+			return piece
+	return null
+
+
+## Les pièces du manoir de jeu — toutes sauf le sas d'intro. C'est parmi elles
+## que se tirent la sortie et les trois objets à chercher.
+func pieces_de_jeu() -> Array:
+	return pieces().filter(func(piece: Node3D) -> bool:
+		return String(piece.name) != PIECE_INTRO)
 
 
 ## Un point dégagé par pièce pour la ronde des rôdeurs : le repère de réveil.
@@ -369,6 +490,7 @@ func _on_joueur_attrape() -> void:
 	if partie_gagnee or partie_perdue:
 		return
 	partie_perdue = true
+	son_attrape.play()
 	message_perdu.show()
 	message_action.text = ""
 	message_refus.text = ""
@@ -397,6 +519,54 @@ func _on_tentative_ouverture() -> void:
 		gagne()
 	else:
 		refuse_ouverture()
+
+
+## Le joueur a pris la clé d'intro dans le coffre du sas. Elle n'ouvre que la
+## porte du sas — jamais la porte rouge, qui n'obéit qu'au badge.
+func _on_cle_intro_prise() -> void:
+	cle_intro = true
+
+
+## Le joueur a pris la carte sur la table de l'intro : le plan (bouton M) s'active.
+## Un mot le lui apprend — M n'est pas sur le panneau d'accueil.
+func _on_carte_prise() -> void:
+	$Interface/Carte.disponible = true
+	annonce_refus("Carte en poche — M pour l'ouvrir")
+
+
+## La porte du sas, comme la porte rouge, ne décide pas d'elle-même : le Jeu
+## l'ouvre si la clé d'intro est en poche, sinon il refuse et nomme la clé.
+func _on_tentative_porte_intro() -> void:
+	if partie_gagnee or partie_perdue:
+		return
+	if cle_intro:
+		ouvre_le_sas()
+	else:
+		annonce_refus("Il te faut la clé, dans le coffre")
+
+
+## La clé ouvre les DEUX portes du sas d'un coup, et rouvre la pièce au manoir :
+## avant la clé les rôdeurs en étaient exclus (2a), à partir de là ils peuvent y
+## entrer et t'y suivre — la double porte devient alors ton échappatoire.
+func ouvre_le_sas() -> void:
+	for porte in get_tree().get_nodes_in_group("portes_intro"):
+		if not porte.ouverte:
+			porte.ouvre()
+	reintegre_le_sas()
+
+
+## Le sas rejoint le monde des rôdeurs : ils le rôdent (ceux de son étage) et le
+## ratissent (tous). Le scellement du jet 16 était permanent ; il devient
+## conditionnel — levé à l'ouverture des portes.
+func reintegre_le_sas() -> void:
+	var sas := piece_intro()
+	if sas == null:
+		return
+	var nom := String(sas.name)
+	var pos: Vector3 = sas.reveil.global_position
+	var plain_pied := est_de_plain_pied(sas)
+	for rodeur in rodeurs():
+		rodeur.reintegre(nom, pos, plain_pied)
 
 
 ## Le coffre-fort ne s'ouvre qu'avec les deux morceaux. Verrouillé, il dit ce

@@ -1,0 +1,29 @@
+[gd_scene load_steps=4 format=3]
+
+; Le bouton développeur : un petit voyant sur un mur du sas, qu'on presse (E)
+; pour ouvrir la porte-portail vers le quartier de jeux. Couleur « dev » (magenta),
+; passe au vert une fois pressé.
+
+[ext_resource type="Script" path="res://bouton_dev.gd" id="1_bouton"]
+
+[sub_resource type="StandardMaterial3D" id="mat_bouton"]
+albedo_color = Color(0.45, 0.32, 0.18, 1)
+roughness = 0.8
+emission_enabled = true
+emission = Color(0.5, 0.35, 0.12, 1)
+
+[sub_resource type="BoxMesh" id="mesh_bouton"]
+size = Vector3(0.3, 0.3, 0.12)
+
+[sub_resource type="BoxShape3D" id="shape_bouton"]
+size = Vector3(0.4, 0.4, 0.25)
+
+[node name="BoutonDev" type="StaticBody3D"]
+script = ExtResource("1_bouton")
+
+[node name="Voyant" type="MeshInstance3D" parent="."]
+mesh = SubResource("mesh_bouton")
+surface_material_override/0 = SubResource("mat_bouton")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("shape_bouton")

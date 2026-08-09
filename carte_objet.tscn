@@ -1,0 +1,29 @@
+[gd_scene load_steps=5 format=3]
+
+; La carte posée sur la table de l'intro (jet 17). Un feuillet plat, teinte
+; parchemin, qu'on vise et qu'on prend avec E ; le plan (bouton M) s'active alors.
+; Posée en instance FIXE sur la table dans jeu.tscn.
+
+[ext_resource type="Script" path="res://carte_objet.gd" id="1_carte_objet"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_papier"]
+albedo_color = Color(0.86, 0.82, 0.7, 1)
+roughness = 0.9
+
+[sub_resource type="BoxMesh" id="BoxMesh_carte"]
+material = SubResource("StandardMaterial3D_papier")
+size = Vector3(0.4, 0.02, 0.3)
+
+; Collision un peu plus large et haute que le feuillet : on la vise sans peine
+; en la regardant d'en haut, depuis la table.
+[sub_resource type="BoxShape3D" id="BoxShape3D_carte"]
+size = Vector3(0.5, 0.15, 0.4)
+
+[node name="CarteObjet" type="StaticBody3D"]
+script = ExtResource("1_carte_objet")
+
+[node name="Feuille" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_carte")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_carte")

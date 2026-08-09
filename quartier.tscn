@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3]
+
+; Le quartier de jeux (zone cube), scène séparée du manoir. On y accède depuis
+; l'intro par la porte-portail (étape B). Porté du prototype cube3D (étape A).
+
+[ext_resource type="Script" path="res://quartier.gd" id="1_quartier"]
+
+[node name="Quartier" type="Node3D"]
+script = ExtResource("1_quartier")

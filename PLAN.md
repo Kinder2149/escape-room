@@ -360,3 +360,106 @@ Le manoir dit ses règles, et **n'importe qui peut y jouer** : jusqu'à aujourd'
 Deux commentaires mentaient, relevés à l'audit. Le jet 6 avait déclaré ce défaut soldé ; il était revenu. **Corrigés :**
 - L'en-tête de `jeu.gd` disait que la porte rouge s'ouvre « une fois les deux morceaux réunis » — c'est **le badge** depuis le jet 9.
 - `cachette.gd` parlait des « quatre meubles » et des « quatre cachettes » — il y en a **neuf**.
+
+---
+
+# Jet 13 — Le geste qui expose *(figé dans `BASE.md`, 27/07/2026)*
+
+> Première piste de la question ouverte. **Le risque du jet, nommé d'avance :** on touche à l'interaction du joueur — les sondes `partie` et `controles` la rejouent. Chaque étape se teste à la main **et** le filet doit rester vert.
+
+## Étape 1 — Le geste qui bloque et expose *(faite — validée le 27/07/2026)*
+Ouvrir un coffre cloue le joueur, regard fixe, avec une barre d'avancement à l'écran ; le couvercle ne bascule qu'à la fin ; appuyer sur une direction annule et rend la main. Prendre le contenu (morceau ou badge), l'ouverture du coffre-fort, se cacher et la porte de sortie restent instantanés.
+
+**Test manuel (machinerie) :** le regard se fige, je ne peux pas regarder autour, la barre montre l'ouverture en cours, une direction annule et me libère (coffre fermé), sinon le coffre s'ouvre à la fin, et un rôdeur qui m'atteint pendant l'ouverture m'attrape.
+**Filet :** `partie` et `controles` restent vertes — adaptées si la fouille change leur façon d'ouvrir un coffre.
+
+## Étape 2 — L'équilibrage *(faite — validée le 27/07/2026)*
+**Sons temporaires câblés le 27/07/2026**, enchaînés sans jamais se chevaucher (machine à états `maj_son_danger` dans `jeu.gd`) : repéré → `vue` (un coup) ; `vue` finie et un rôdeur toujours sur toi (poursuite **ou battue**) → `poursuite` en boucle ; le rôdeur reprend sa ronde normale → silence, qu'un `ambiance` comblera plus tard ; capture → `attrape`. Nœuds `SonVue`/`SonPoursuite`/`SonAttrape` dans `jeu.tscn`, fichiers dans `assets/son/`. À remplacer par les vrais sons sans douleur.
+
+Session de jeu de Kinder : **durée de fouille validée à 2 s** (`DUREE_FOUILLE` dans `coffre.gd`), **geste interruptible confirmé**.
+
+## Fin du jet 13 — LE GESTE QUI EXPOSE *(27/07/2026)*
+Fouiller coûte enfin un moment de vulnérabilité : ouvrir un coffre cloue le joueur 2 s, regard fixe, avec une barre d'avancement ; interruptible au prix des mains vides ; jamais en se cachant ni sur la sortie. La menace déjà construite mord — les neuf cachettes retrouvent un sens. **Aucune scène nouvelle, aucun chiffre gelé touché.** Trois sons temporaires posés pour l'équilibrage, à remplacer par les vrais. Les 21 séries restent vertes.
+
+**Reste des trois pistes :** la piste 2 (l'étau), puis la piste 3 (le fil rouge).
+
+---
+
+# Jet 14 — L'étau *(figé dans `BASE.md`, 27/07/2026)*
+
+> Deuxième piste de la question ouverte. **Le risque du jet, nommé d'avance :** on touche à l'IA du rôdeur — plusieurs sondes la rejouent (`deux_rodeurs`, `battue`, `direction`, `defaite`, `partie`). Chaque étape se teste à la main **et** le filet doit rester vert.
+
+## Étape 1 — L'alerte et la convergence *(faite — validée le 27/07/2026)*
+Un rôdeur qui repère le joueur annonce sa position ; le Jeu la relaie à l'autre, qui — s'il est en ronde et peut arriver en ≤ 18 m — converge à l'allure de traque vers le point de contact. Le budget (10 s) expire → il reprend sa ronde chez lui. Il voit le joueur en chemin → poursuite. **Les 21 séries restent vertes.**
+
+## Étape 2 — Le suivi vivant *(faite — validée le 27/07/2026)*
+Tant que le poursuivant voit le joueur, la cible de l'allié **se met à jour** (il suit la position vivante) et son budget se recharge : le poursuivant re-transmet sa dernière position connue à chaque déplacement. **Les 21 séries restent vertes.**
+
+## Étape 3 — L'équilibrage *(faite — validée le 27/07/2026)*
+Session de jeu de Kinder : **budget de 10 s conservé**, aucun exploit « se faire voir pour vider un étage » rencontré. Défaut corrigé en cours de jet : les deux rôdeurs se bloquaient l'un l'autre (même calque de collision) — réglé en les passant sur leur propre calque (voir `BASE.md`).
+
+## Fin du jet 14 — L'ÉTAU *(27/07/2026)*
+Se faire voir coûte enfin : un rôdeur qui repère le joueur réveille l'autre, qui converge à l'allure de traque s'il peut arriver utilement (≤ 18 m), suit la position vivante, et rentre chez lui si le budget de 10 s s'épuise. Les deux rôdeurs forment un étau au lieu de s'ignorer, **sans jamais se bloquer**. **Aucune scène nouvelle, aucun chiffre gelé touché** (réutilise la traque 3 m/s ; ajoute le budget 10 s). Les 21 séries vertes.
+
+**Reste des trois pistes :** la piste 3 (le fil rouge).
+
+---
+
+# Jet 15 — Les noms de pièces *(figé dans `BASE.md`, 27/07/2026)*
+
+> Première partie de la piste 3. Modèle : le texte 3D « SORTIE » de la porte, mais **ombré** (révélé par la torche, pas allumé).
+
+## Étape 1 — La plaque, sur une pièce *(faite — validée le 27/07/2026)*
+Texte 3D **ombré** ajouté à la scène Pièce, branché sur un `nom_affiche` propre. Posé sur la Cuisine, sur le mur du fond. Noir dans le noir, révélé par la torche.
+
+## Étape 2 — Les treize plaques *(faite — validée le 27/07/2026)*
+Chaque pièce a son nom sur son **mur du fond**, face au joueur qui entre — position dérivée du repère « Sortie » de chaque pièce (posé sur le mur extérieur). Noms accentués réglés par `nom_affiche` (Entrée, Salle à manger, Chambre de maître…). Le Bureau (cul-de-sac) est sur son mur est.
+**Placement fait par éditions texte de `maison.tscn`** — jamais par un enregistrement de l'éditeur, qui casserait le CSG (voir la leçon plus bas).
+
+## Étape 3 — L'équilibrage *(faite — validée le 27/07/2026)*
+Session de Kinder : lisibilité et pénombre confirmées. **Tranché : toutes les pièces sont nommées, la pièce du réveil comprise** — le mystère du réveil n'a pas été jugé entamé.
+
+## Fin du jet 15 — LE MANOIR SE LIT *(27/07/2026)*
+Chaque pièce dit son nom sur son mur du fond, à la torche, noir dans le noir. Le fil rouge n'est plus aveugle : on sait où l'on est. **Aucune règle touchée, aucune scène nouvelle** (la plaque vit dans la Pièce). Les 21 séries vertes.
+
+**Leçon coûteuse du jet, à ne jamais réoublier :** un enregistrement de scène par l'éditeur (MCP ou GUI) réordonne le CSG et **détruit `maison.tscn`** — jeu ingagnable, réparé par `git checkout`. Toute modif de scène = **édition de texte chirurgicale**.
+
+**Reste de la piste 3 :** le jet 16 — la pièce d'introduction et la carte.
+
+---
+
+# Jet 16 — La pièce d'introduction *(figé dans `BASE.md`, 27/07/2026)*
+
+> Deuxième partie de la piste 3. **Pièce dédiée et fixe** où l'on se réveille toujours, scellée par une porte verrouillée qu'une clé d'intro (dans un coffre) ouvre. La carte est le jet 17.
+
+## Étape 1 — La pièce d'intro et son ouverture *(faite — validée le 27/07/2026)*
+La **Chambre** est réaffectée en sas d'intro fixe (`PIECE_INTRO` dans `jeu.gd`) : le joueur s'y réveille toujours, elle sort du tirage des objets (`pieces_de_jeu()`). Changement minimal — la logique des rôdeurs reste intacte à ce stade (scellement à l'étape 2). Sonde `regles_etage` mise à jour (« le reveil est toujours le sas d'intro » remplace « parfois à l'étage »). Les 21 séries vertes.
+
+## Étape 2 — Les portes verrouillées + la clé d'intro *(faite — 28/07/2026)*
+Menée en trois temps, chacun testé avant le suivant :
+- **2a — Sceller le sas et remettre le filet au vert.** Les rôdeurs ne rôdent ni ne ratissent le sas (`pieces_de_jeu()` dans `lance_les_rodeurs` et `niveaux_de_pieces`), sinon ils se coinceraient contre la porte. Trois sondes touchées : `deux_rodeurs` (12 pièces au lieu de 13), `battue` (scénario relogé Chambre → salle de bain, la baignoire), `direction`/`depart`/`regles_etage` inchangées. 21 séries vertes.
+- **2b — Les portes, la clé, la boucle.** Nouvelle scène `porte_intro` (StaticBody bois, `tentative_ouverture`, `ouvre()` qui coulisse) instanciée FIXE dans `jeu.tscn` (hors carte de nav). `coffre.gd` : contenu dédié `cle_intro_prise` (jamais le badge). `jeu.gd` retient la clé, ouvre / refuse (« Il te faut la clé »). Plaque « Chambre » → « Introduction ». Mobilier du sas réduit dans Blender à **armoire (cachette) + table**, lit/chevet retirés (ré-export `mobilier.glb`, 69 → 68 meubles). Réveil déplacé au fond (face à la pièce), coffre réorienté.
+- **Révision « deux portes » (arbitrage Kinder, 28/07/2026).** Un cul-de-sac scellé serait sûr mais mort. On perce une **seconde porte** (mur est du sas → salle de bain, CSG `PorteSud1VersSud2` dans `maison.tscn`), les deux groupées `portes_intro`. La clé ouvre **les deux d'un coup ET lève le scellement** (`ouvre_le_sas` / `reintegre_le_sas` dans `jeu.gd`, `reintegre` dans `rodeur.gd`) : la pièce redevient normale, les rôdeurs peuvent suivre, la double porte est l'échappatoire.
+
+**Testé le 28/07/2026 :** réveillé enfermé au fond, deux portes ; coffre (face à toi) → clé → les deux portes s'ouvrent → un rôdeur peut te suivre → tu sors par l'autre. **Filet : 21 séries vertes** — la nouvelle liaison de nav (`PorteSud1VersSud2`) n'a rien cassé, aucun ajustement de sonde nécessaire.
+
+## Étape 3 — L'équilibrage
+Session de Kinder : l'intro reste courte, sans friction. *(Le ressenti a été réglé au fil de l'étape 2 — orientation du réveil, coffre face au joueur, double porte — et validé « parfait » le 28/07.)*
+
+---
+
+# Jet 17 — La carte *(figé dans `BASE.md`, 28/07/2026)*
+
+> Dernière partie de la piste 3. Plan du manoir pris sur la table de l'intro, affiché à M : murs + noms, jamais les objets. Construit depuis les dalles de sol réelles (jet 10) — colle toujours à la géométrie, la cave s'y ajoutera seule.
+
+## Étape A — Le plan à l'écran (M) *(faite — 28/07/2026)*
+Nouveau `carte.gd` sur un `Control` de l'interface (aucune scène). Il dessine, au runtime depuis les dalles de sol réelles, chaque pièce à l'échelle dans sa teinte (jet 10) avec son nom (`nom_affiche` de la Pièce), **rez à gauche / étage à droite**, plus un point **« tu es ici »**. M ouvre/ferme, le temps tourne. Aucun objet. Inerte dans les sondes (M jamais pressé) — filet vert.
+
+## Étape B — Prendre la carte sur la table *(faite — 28/07/2026)*
+Nouvelle scène `carte_objet` (feuillet parchemin) posée fixe sur la table du sas ; **E** la prend (instantané, `carte_prise`), collision désactivée à la prise. `jeu.gd` active alors le plan (`Carte.disponible`) + message « Carte en poche — M pour l'ouvrir ». `carte.gd` : `disponible` faux au départ. Inerte dans les sondes — filet vert.
+
+## Étape C — L'équilibrage *(validée — 28/07/2026)*
+Réglée au fil des tests A/B et validée « parfait » : la carte situe sans révéler les objets, la consultation se sent (le temps tourne).
+
+## Fin du jet 17 — LE MANOIR SE DONNE À LIRE *(28/07/2026)*
+Le fil rouge n'est plus aveugle : noms sur les murs (jet 15), pièce d'introduction qui apprend la boucle (jet 16), et **la carte prise dans l'intro** qui situe le joueur dans le labyrinthe sans jamais dire où sont les objets. **Les trois pistes de la question ouverte sont closes** (geste qui expose, étau, fil rouge) : le jeu a gagné son second verbe. Aucune règle de recherche affaiblie, aucun chiffre d'équilibrage touché. 12 scènes sur 20, trois documents.
