@@ -150,34 +150,106 @@ func _bloc_face(f: Dictionary, cu: float, cv: float, lu: float, lv: float, y_bas
 
 # ---- Meubles composites (à la manière du manoir) -----------------------------
 
-# Une table : plateau sur 4 pieds (creux dessous).
+# Une table : plateau fin + ceinture (jupe) + 4 pieds resserrés vers le bas
+# (illusion d'un pied qui s'affine, avec deux blocs empilés par pied).
 func _table(f: Dictionary, cu: float, cv: float, larg: float, prof: float, couleur: Color) -> void:
-	_bloc_face(f, cu, cv, larg, prof, 0.66, 0.07, couleur)
-	var du := larg / 2.0 - 0.12
-	var dv := prof / 2.0 - 0.12
+	_bloc_face(f, cu, cv, larg, prof, 0.68, 0.05, couleur)                    # plateau, fin
+	_bloc_face(f, cu, cv, larg - 0.16, prof - 0.16, 0.58, 0.08, couleur)      # ceinture (jupe)
+	var du := larg / 2.0 - 0.14
+	var dv := prof / 2.0 - 0.14
 	for su in [-1.0, 1.0]:
 		for sv in [-1.0, 1.0]:
-			_bloc_face(f, cu + su * du, cv + sv * dv, 0.12, 0.12, 0.0, 0.66, couleur)
+			_bloc_face(f, cu + su * du, cv + sv * dv, 0.11, 0.11, 0.28, 0.30, couleur)  # pied haut
+			_bloc_face(f, cu + su * du, cv + sv * dv, 0.08, 0.08, 0.0, 0.28, couleur)   # pied bas, aminci
 
-# Un canapé : socle + assise + dossier (côté +v) + deux accoudoirs.
+# Un canapé : quatre pieds courts + assise en deux coussins + dossier + accoudoirs.
 func _canape(f: Dictionary, cu: float, cv: float, larg: float, couleur: Color) -> void:
-	_bloc_face(f, cu, cv, larg, 0.95, 0.0, 0.16, couleur)                     # socle
-	_bloc_face(f, cu, cv - 0.05, larg - 0.4, 0.7, 0.16, 0.18, couleur)        # assise
-	_bloc_face(f, cu, cv + 0.4, larg, 0.2, 0.16, 0.55, couleur)              # dossier
-	_bloc_face(f, cu - larg / 2.0 + 0.12, cv, 0.24, 0.95, 0.16, 0.34, couleur) # accoudoir g
-	_bloc_face(f, cu + larg / 2.0 - 0.12, cv, 0.24, 0.95, 0.16, 0.34, couleur) # accoudoir d
+	var du := larg / 2.0 - 0.35
+	for su in [-1.0, 1.0]:
+		for sv in [-1.0, 1.0]:
+			_bloc_face(f, cu + su * du, cv + sv * 0.35, 0.09, 0.09, 0.0, 0.14, couleur)  # pieds
+	var demi_larg := (larg - 0.5) / 2.0 - 0.03
+	_bloc_face(f, cu - demi_larg / 2.0 - 0.015, cv - 0.05, demi_larg, 0.68, 0.14, 0.20, couleur)  # coussin g
+	_bloc_face(f, cu + demi_larg / 2.0 + 0.015, cv - 0.05, demi_larg, 0.68, 0.14, 0.20, couleur)  # coussin d
+	_bloc_face(f, cu, cv + 0.4, larg, 0.2, 0.14, 0.55, couleur)                                   # dossier
+	_bloc_face(f, cu - larg / 2.0 + 0.12, cv, 0.24, 0.95, 0.14, 0.34, couleur)                    # accoudoir g
+	_bloc_face(f, cu + larg / 2.0 - 0.12, cv, 0.24, 0.95, 0.14, 0.34, couleur)                    # accoudoir d
 
-# Une étagère : deux montants + quatre tablettes.
+# Une étagère : plinthe + deux montants + panneau de fond + quatre tablettes + chapeau,
+# et sur chaque tablette, un petit bric-à-brac (caisses/boîtes empilées, tailles et
+# teintes variées) — une étagère nue lit comme un décor inachevé, jamais crédible.
 func _etagere(f: Dictionary, cu: float, cv: float, larg: float, couleur: Color) -> void:
-	_bloc_face(f, cu - larg / 2.0 + 0.06, cv, 0.1, 0.42, 0.0, 1.9, couleur)
-	_bloc_face(f, cu + larg / 2.0 - 0.06, cv, 0.1, 0.42, 0.0, 1.9, couleur)
-	for y in [0.35, 0.85, 1.35, 1.8]:
+	_bloc_face(f, cu, cv + 0.19, larg, 0.04, 0.0, 0.08, couleur)                        # plinthe
+	_bloc_face(f, cu, cv + 0.19, larg - 0.12, 0.04, 0.08, 1.86, couleur.darkened(0.15))  # panneau de fond
+	_bloc_face(f, cu - larg / 2.0 + 0.06, cv, 0.1, 0.4, 0.08, 1.86, couleur)             # montant g
+	_bloc_face(f, cu + larg / 2.0 - 0.06, cv, 0.1, 0.4, 0.08, 1.86, couleur)             # montant d
+	var tablettes := [0.42, 0.90, 1.38, 1.84]
+	for y in tablettes:
 		_bloc_face(f, cu, cv, larg, 0.42, y, 0.05, couleur)
+	_bloc_face(f, cu, cv, larg + 0.08, 0.46, 1.94, 0.05, couleur)                        # chapeau
+	# bric-à-brac : trois objets par tablette (sauf la plus haute, moins encombrée),
+	# décalés en cv pour rester bien posés sur la profondeur de la tablette.
+	var offsets_larg := [-0.30, -0.02, 0.30]
+	var hauteurs := [0.22, 0.30, 0.18]
+	var teintes := [couleur.lightened(0.12), couleur.darkened(0.2), couleur.lightened(0.25)]
+	for ti in tablettes.size():
+		if ti == tablettes.size() - 1:
+			continue  # tablette du haut, hors de portée : laissée nue
+		var y_base: float = tablettes[ti] + 0.05
+		for oi in offsets_larg.size():
+			_bloc_face(f, cu + offsets_larg[oi] * larg, cv, 0.16, 0.20, y_base, hauteurs[oi], teintes[oi])
 
-# Un lavabo : vasque sur pied.
+# Un lavabo : pied fin + vasque + rebord + robinet au mur.
 func _lavabo(f: Dictionary, cu: float, cv: float, couleur: Color) -> void:
-	_bloc_face(f, cu, cv, 0.7, 0.5, 0.72, 0.22, couleur)
-	_bloc_face(f, cu, cv, 0.26, 0.26, 0.0, 0.72, couleur)
+	_bloc_face(f, cu, cv, 0.16, 0.16, 0.0, 0.70, couleur.darkened(0.1))                 # pied
+	_bloc_face(f, cu, cv, 0.62, 0.44, 0.70, 0.16, couleur)                              # vasque
+	_bloc_face(f, cu, cv, 0.70, 0.50, 0.84, 0.03, couleur.lightened(0.1))               # rebord
+	_bloc_face(f, cu, cv - 0.24, 0.06, 0.06, 0.86, 0.16, couleur.darkened(0.2))         # robinet
+
+# Une machine à laver : caisson + hublot en creux (plus sombre) + bandeau de
+# contrôle — un pavé nu ne lit pas comme un meuble reconnaissable.
+func _machine_a_laver(f: Dictionary, cu: float, cv: float, couleur: Color) -> void:
+	_bloc_face(f, cu, cv, 0.85, 0.85, 0.0, 0.95, couleur)                          # caisson
+	_bloc_face(f, cu, cv - 0.44, 0.5, 0.06, 0.30, 0.5, couleur.darkened(0.35))     # hublot (creux)
+	_bloc_face(f, cu, cv - 0.44, 0.75, 0.04, 0.82, 0.1, couleur.darkened(0.15))    # bandeau de contrôle
+
+# ---- Les plaques de nom (même principe que le manoir, jet 15) ----------------
+
+# Une plaque de nom, ombrée (révélée par la torche, jamais allumée), montée sur
+# un mur à la hauteur "hauteur", et orientée pour faire face à "face_dir" —
+# la direction (tangente, unitaire) vers laquelle le texte se tourne.
+func _plaque(f: Dictionary, cu: float, cv: float, texte: String, face_dir: Vector3, hauteur: float = 1.7) -> void:
+	var pos: Vector3 = f["pos"]
+	var normale: Vector3 = f["normale"]
+	var t := _tu_tv(normale)
+	var tu: Vector3 = t[0]
+	var tv: Vector3 = t[1]
+	var label := Label3D.new()
+	label.text = texte
+	label.pixel_size = 0.006
+	label.font_size = 64
+	label.shaded = true
+	label.no_depth_test = false
+	var x_axis: Vector3 = normale.cross(face_dir).normalized()
+	label.transform = Transform3D(Basis(x_axis, normale, face_dir),
+		pos + normale * (EPAISSEUR / 2.0 + hauteur) + tu * cu + tv * cv + face_dir * 0.06)
+	add_child(label)
+
+# Pose une plaque sur le mur OPPOSÉ à la porte principale d'une pièce, tournée
+# vers cette porte — visible en entrant, comme au manoir (jet 15).
+func _plaque_piece(f: Dictionary, cu: float, cv: float, du: float, dv: float, texte: String, cote_porte: String) -> void:
+	var t := _tu_tv(f["normale"])
+	var tu: Vector3 = t[0]
+	var tv: Vector3 = t[1]
+	match cote_porte:
+		"droite":
+			_plaque(f, cu - du + 0.1, cv, texte, tu)
+		"gauche":
+			_plaque(f, cu + du - 0.1, cv, texte, -tu)
+		"haut":
+			_plaque(f, cu, cv - dv + 0.1, texte, tv)
+		"bas":
+			_plaque(f, cu, cv + dv - 0.1, texte, -tv)
 
 # Un côté de pièce (mur long de "longueur" le long de l'axe "u" ou "v"), avec ou
 # sans porte (un trou PORTE_PIECE au milieu).
@@ -215,29 +287,161 @@ func _piece(f: Dictionary, cu: float, cv: float, du: float, dv: float, portes: A
 	if not "droite" in sautes:
 		_cote(f, cu + du, cv, dv * 2.0, "v", "droite" in portes)
 
+# Le couloir central en croix (même principe que l'aile entrée, face 0) :
+# QUADRANT est la distance du centre au coeur d'un quadrant plein (9 = HALL + demi-taille),
+# DEMI_QUADRANT la demi-taille d'un quadrant plein (5,5). Le couloir occupe la bande
+# |cu|<HALL ou |cv|<HALL, jamais construite, et rejoint donc les quatre bords de la face.
+const HALL: float = 3.5
+const DEMI_QUADRANT: float = 5.5
+const QUADRANT: float = HALL + DEMI_QUADRANT   # 9.0
+
 # L'agencement propre à chaque face (index 0..5) : bas, haut, nord, sud, ouest, est.
 func _layout_face(f: Dictionary, idx: int) -> void:
 	match idx:
 		0:  # l'AILE ENTRÉE (arrivée), dense et meublée
 			_aile_entree(f)
-		1:  # deux pièces empilées
-			_piece(f, 0, -7, 12, 6, ["bas"])
-			_piece(f, 0, 7, 12, 6, ["haut"])
-		2:  # deux pièces (décalées vers l'intérieur, loin de la porte du couloir)
-			_piece(f, -7, 4, 6, 9, ["gauche"])
-			_piece(f, 7, 4, 6, 9, ["droite"])
-		3:  # quatre petites pièces (quadrants)
-			_piece(f, -7, -7, 6, 6, ["gauche"])
-			_piece(f, 7, -7, 6, 6, ["droite"])
-			_piece(f, -7, 7, 6, 6, ["gauche"])
-			_piece(f, 7, 7, 6, 6, ["droite"])
-		4:  # trois pièces en enfilade
-			_piece(f, -9, 0, 4, 12, ["gauche"])
-			_piece(f, 0, 0, 4, 12, ["bas"])
-			_piece(f, 9, 0, 4, 12, ["droite"])
-		5:  # une grande et une petite
-			_piece(f, -4, 0, 9, 12, ["gauche"])
-			_piece(f, 10, 0, 3, 12, ["droite"])
+		1:  # quatre pièces égales, une par quadrant, chacune ouverte sur le couloir
+			_face_quatre_pieces(f)
+		2:  # deux pièces en diagonale, plus grandes ; les deux autres quadrants restent
+			# une extension ouverte du couloir (loin de la porte du couloir d'entrée)
+			_face_deux_grandes_pieces(f)
+		3:  # six petites pièces : deux quadrants pleins, deux quadrants coupés en deux
+			# (même schéma de découpe que le vestiaire/W.-C. de l'aile entrée, face 0)
+			_face_six_pieces(f)
+		4:  # trois pièces en enfilade, posées dans la moitié nord ; la moitié sud et
+			# les côtés restent une extension ouverte du couloir.
+			_face_enfilade(f)
+		5:  # une grande pièce (tout l'ouest, un seul accès) et une petite (posée dans
+			# l'est, dégagée tout autour) — comme le Bureau du manoir, en cul-de-sac partiel.
+			_face_grande_et_petite(f)
+
+# LA FACE 5 : une grande pièce (tout l'ouest, un seul accès) et une petite
+# (posée dans l'est, dégagée tout autour) — comme le Bureau du manoir, en
+# cul-de-sac partiel.
+func _face_grande_et_petite(f: Dictionary) -> void:
+	var bois := Color(0.26, 0.18, 0.11)
+	var tissu := Color(0.30, 0.28, 0.27)
+	var pierre := Color(0.30, 0.28, 0.25)
+	# Ouest : Grande salle — un seul accès (droite), meublée en trois zones
+	# étalées le long du mur du fond, loin de la porte.
+	_piece(f, -QUADRANT, 0, DEMI_QUADRANT, 14.5, ["droite"])
+	_plaque_piece(f, -QUADRANT, 0, DEMI_QUADRANT, 14.5, "Grande salle", "droite")
+	_canape(f, -QUADRANT - 3.0, -9.0, 2.8, tissu)
+	_table(f, -QUADRANT - 3.0, 0.0, 2.4, 1.1, bois)
+	_etagere(f, -QUADRANT - 3.0, 9.0, 3.4, bois)
+	# Est : Remise — petite pièce en cul-de-sac, dégagée tout autour.
+	_piece(f, QUADRANT, 0, 3.0, 5.0, ["gauche"])
+	_plaque_piece(f, QUADRANT, 0, 3.0, 5.0, "Remise", "gauche")
+	_bloc_face(f, QUADRANT + 1.5, 0.0, 0.9, 0.9, 0.0, 0.9, pierre)  # caisse
+
+# LA FACE 4 : trois pièces en enfilade (ouest→centre→est, portes qui
+# s'enchaînent), posées dans la moitié nord ; la moitié sud et les côtés
+# restent une extension ouverte du couloir.
+func _face_enfilade(f: Dictionary) -> void:
+	var bois := Color(0.26, 0.18, 0.11)
+	var tissu := Color(0.30, 0.28, 0.27)
+	# Ouest : Antichambre — un banc, et une patère au mur voisin (le banc seul
+	# lisait comme un objet oublié).
+	_piece(f, -9.6, QUADRANT, 4.8, DEMI_QUADRANT, ["droite", "bas"])
+	_plaque_piece(f, -9.6, QUADRANT, 4.8, DEMI_QUADRANT, "Antichambre", "bas")
+	_bloc_face(f, -9.6, QUADRANT + 3.5, 3.0, 0.5, 0.0, 0.45, bois)  # banc
+	_bloc_face(f, -13.9, QUADRANT, 0.12, 2.6, 1.7, 0.1, bois)       # patère au mur gauche
+	# Centre : Salle commune — table longue, coeur de l'enfilade, un banc adossé
+	# au mur solide pour que la table ait de la compagnie.
+	_piece(f, 0.0, QUADRANT, 4.8, DEMI_QUADRANT, ["droite"], ["gauche"])
+	_plaque_piece(f, 0.0, QUADRANT, 4.8, DEMI_QUADRANT, "Salle commune", "droite")
+	_table(f, 0.0, QUADRANT - 2.0, 3.2, 1.1, bois)
+	_bloc_face(f, 0.0, QUADRANT + 3.7, 2.6, 0.4, 0.0, 0.45, bois)   # banc contre le mur du fond
+	# Est : Réfectoire — un canapé et une petite table basse devant lui, cul-de-sac
+	# de l'enfilade côté couloir sud.
+	_piece(f, 9.6, QUADRANT, 4.8, DEMI_QUADRANT, ["bas"], ["gauche"])
+	_plaque_piece(f, 9.6, QUADRANT, 4.8, DEMI_QUADRANT, "Réfectoire", "bas")
+	_canape(f, 9.6, QUADRANT + 3.0, 2.6, tissu)
+	_table(f, 9.6, QUADRANT + 0.8, 1.4, 0.8, bois)
+
+# LA FACE 3 : six petites pièces — deux quadrants pleins (NE, SW) et deux
+# quadrants coupés en deux le long de v (NW, SE), même découpe que le
+# vestiaire/W.-C. de l'aile entrée (face 0).
+func _face_six_pieces(f: Dictionary) -> void:
+	var bois := Color(0.26, 0.18, 0.11)
+	var email := Color(0.52, 0.51, 0.49)
+	# NE plein : Chaufferie.
+	_piece(f, QUADRANT, QUADRANT, DEMI_QUADRANT, DEMI_QUADRANT, ["gauche", "bas"])
+	_plaque_piece(f, QUADRANT, QUADRANT, DEMI_QUADRANT, DEMI_QUADRANT, "Chaufferie", "gauche")
+	_etagere(f, QUADRANT + 3.0, QUADRANT + 3.0, 3.2, bois)
+	_bloc_face(f, QUADRANT + 2.5, QUADRANT - 1.0, 1.4, 1.4, 0.0, 1.6, email)  # cuve
+	# SW plein : Local technique.
+	_piece(f, -QUADRANT, -QUADRANT, DEMI_QUADRANT, DEMI_QUADRANT, ["droite", "haut"])
+	_plaque_piece(f, -QUADRANT, -QUADRANT, DEMI_QUADRANT, DEMI_QUADRANT, "Local technique", "droite")
+	_etagere(f, -QUADRANT - 3.0, -QUADRANT - 3.0, 3.2, bois)
+	_table(f, -QUADRANT - 2.0, -QUADRANT + 2.0, 2.0, 1.0, bois)
+	# NW coupé en deux le long de v : la pièce du coin (Vestiaires), puis celle
+	# côté couloir (Casiers), cloison partagée en v = QUADRANT - 2.0.
+	_piece(f, -QUADRANT, QUADRANT + 2.25, DEMI_QUADRANT, 3.25, ["droite", "bas"])
+	_plaque_piece(f, -QUADRANT, QUADRANT + 2.25, DEMI_QUADRANT, 3.25, "Vestiaires", "droite")
+	_bloc_face(f, -QUADRANT - 2.5, QUADRANT + 3.5, 3.4, 0.5, 0.0, 0.45, bois)  # banc
+	_piece(f, -QUADRANT, QUADRANT - 3.25, DEMI_QUADRANT, 2.25, ["droite"], ["haut"])
+	_plaque_piece(f, -QUADRANT, QUADRANT - 3.25, DEMI_QUADRANT, 2.25, "Casiers", "droite")
+	_etagere(f, -QUADRANT - 2.5, QUADRANT - 3.6, 3.2, bois)
+	# SE coupé en deux le long de v (même schéma, en miroir) : Infirmerie et Loge.
+	# Chacune avait un seul meuble isolé — un second objet leur donne compagnie.
+	_piece(f, QUADRANT, -QUADRANT - 2.25, DEMI_QUADRANT, 3.25, ["gauche", "haut"])
+	_plaque_piece(f, QUADRANT, -QUADRANT - 2.25, DEMI_QUADRANT, 3.25, "Infirmerie", "gauche")
+	_lavabo(f, QUADRANT + 2.5, -QUADRANT - 3.5, email)
+	_etagere(f, QUADRANT + 2.5, -QUADRANT - 0.8, 2.4, bois)                       # armoire à pharmacie
+	_piece(f, QUADRANT, -QUADRANT + 3.25, DEMI_QUADRANT, 2.25, ["gauche"], ["bas"])
+	_plaque_piece(f, QUADRANT, -QUADRANT + 3.25, DEMI_QUADRANT, 2.25, "Loge", "gauche")
+	_bloc_face(f, QUADRANT + 2.5, -QUADRANT + 3.6, 3.4, 0.5, 0.0, 0.45, bois)  # banc
+	_etagere(f, QUADRANT + 2.5, -QUADRANT + 4.8, 2.0, bois)                       # petite étagère
+
+# LA FACE 2 : deux grandes pièces en diagonale (les deux autres quadrants
+# restent une extension ouverte du couloir, sans mur ni meuble).
+func _face_deux_grandes_pieces(f: Dictionary) -> void:
+	var bois := Color(0.26, 0.18, 0.11)
+	var demi := DEMI_QUADRANT + 1.0
+	# NW : Salle des machines — rangées d'étagères et un établi.
+	_piece(f, -QUADRANT, QUADRANT, demi, demi, ["droite", "bas"])
+	_plaque_piece(f, -QUADRANT, QUADRANT, demi, demi, "Salle des machines", "droite")
+	_etagere(f, -QUADRANT - 3.0, QUADRANT + 3.5, 3.5, bois)
+	_etagere(f, -QUADRANT - 3.0, QUADRANT - 1.5, 3.5, bois)
+	_table(f, -QUADRANT + 1.5, QUADRANT + 4.0, 2.6, 1.0, bois)
+	# SE : Entrepôt — trois rangées de stockage.
+	_piece(f, QUADRANT, -QUADRANT, demi, demi, ["gauche", "haut"])
+	_plaque_piece(f, QUADRANT, -QUADRANT, demi, demi, "Entrepôt", "gauche")
+	_etagere(f, QUADRANT + 3.0, -QUADRANT - 3.5, 3.5, bois)
+	_etagere(f, QUADRANT + 3.0, -QUADRANT + 0.0, 3.5, bois)
+	_etagere(f, QUADRANT + 3.0, -QUADRANT + 3.5, 3.5, bois)
+
+# LA FACE 1 : quatre pièces égales, une par quadrant, chacune ouverte sur le
+# couloir par deux côtés. Meublée légèrement, chacune avec sa plaque (jet 15).
+func _face_quatre_pieces(f: Dictionary) -> void:
+	var bois := Color(0.26, 0.18, 0.11)
+	var tissu := Color(0.30, 0.28, 0.27)
+	# NW : Atelier — table et étagère groupées contre le mur ouest (sans porte),
+	# loin des deux entrées (est, sud), au lieu de deux meubles séparés.
+	_piece(f, -QUADRANT, QUADRANT, DEMI_QUADRANT, DEMI_QUADRANT, ["droite", "bas"])
+	_plaque_piece(f, -QUADRANT, QUADRANT, DEMI_QUADRANT, DEMI_QUADRANT, "Atelier", "droite")
+	_table(f, -QUADRANT - 2.0, QUADRANT + 2.5, 3.0, 1.1, bois)
+	_etagere(f, -QUADRANT - 3.3, QUADRANT + 0.2, 2.6, bois)
+	# NE : Réserve — deux étagères de stockage.
+	_piece(f, QUADRANT, QUADRANT, DEMI_QUADRANT, DEMI_QUADRANT, ["gauche", "bas"])
+	_plaque_piece(f, QUADRANT, QUADRANT, DEMI_QUADRANT, DEMI_QUADRANT, "Réserve", "gauche")
+	_etagere(f, QUADRANT + 2.5, QUADRANT + 3.0, 3.2, bois)
+	_etagere(f, QUADRANT + 2.5, QUADRANT - 3.0, 3.2, bois)
+	# SW : Bureau — table et fauteuil groupés contre le mur ouest (sans porte),
+	# loin des deux portes (est, nord) ; le fauteuil traînait près de la porte
+	# nord, corrigé.
+	_piece(f, -QUADRANT, -QUADRANT, DEMI_QUADRANT, DEMI_QUADRANT, ["droite", "haut"])
+	_plaque_piece(f, -QUADRANT, -QUADRANT, DEMI_QUADRANT, DEMI_QUADRANT, "Bureau", "droite")
+	_table(f, -QUADRANT - 2.5, -QUADRANT - 2.5, 1.8, 1.0, bois)
+	_canape(f, -QUADRANT - 3.5, -QUADRANT + 1.0, 1.3, tissu)
+	# SE : Chambre froide — canapé et petite table contre le mur est (sans porte),
+	# loin des deux portes (ouest, nord) ; le canapé traînait près de la porte
+	# nord, corrigé, et il avait un second meuble en compagnie.
+	_piece(f, QUADRANT, -QUADRANT, DEMI_QUADRANT, DEMI_QUADRANT, ["gauche", "haut"])
+	_plaque_piece(f, QUADRANT, -QUADRANT, DEMI_QUADRANT, DEMI_QUADRANT, "Chambre froide", "gauche")
+	_canape(f, QUADRANT + 2.5, -QUADRANT - 2.5, 2.6, tissu)
+	_table(f, QUADRANT + 2.5, -QUADRANT + 0.5, 1.4, 0.8, bois)
 
 # L'AILE ENTRÉE (face du bas). Un hall central en croix qui rejoint les 4 bords
 # (circulation + basculements vers les ailes voisines) ; tout autour, des pièces
@@ -255,6 +459,13 @@ func _aile_entree(f: Dictionary) -> void:
 	# SE : Débarras au-dessus de l'Escalier, cloison partagée en v=-8.
 	_piece(f, 9, -5.75, 5.5, 2.25, ["gauche", "bas"])        # Débarras : hall + escalier
 	_piece(f, 9, -11.25, 5.5, 3.25, ["gauche"], ["haut"])    # Escalier : hall (mur haut = celui du débarras)
+	# --- les plaques : sur le mur du fond, visibles en entrant (jet 15) ---
+	_plaque_piece(f, -9, 11.25, 5.5, 3.25, "Vestiaire", "droite")
+	_plaque_piece(f, -9, 5.75, 5.5, 2.25, "W.-C.", "droite")
+	_plaque_piece(f, 9, 9, 5.5, 5.5, "Salon", "gauche")
+	_plaque_piece(f, -9, -9, 5.5, 5.5, "Buanderie", "droite")
+	_plaque_piece(f, 9, -5.75, 5.5, 2.25, "Débarras", "gauche")
+	_plaque_piece(f, 9, -11.25, 5.5, 3.25, "Escalier", "gauche")
 	# --- le mobilier (bois brun mat, tissu sourd, pierre, émail sourd) ---
 	var bois := Color(0.26, 0.18, 0.11)
 	var tissu := Color(0.30, 0.28, 0.27)
@@ -268,19 +479,24 @@ func _aile_entree(f: Dictionary) -> void:
 	# W.-C. : cuvette + abattant
 	_bloc_face(f, -12.6, 5.5, 0.6, 0.55, 0.0, 0.4, email)
 	_bloc_face(f, -12.6, 5.5, 0.55, 0.4, 0.4, 0.12, email)
-	# salon d'accueil : canapé (dossier au nord), table basse, fauteuil
+	# salon d'accueil : canapé (dossier au nord) + table basse groupée devant lui
+	# (hors de la diagonale porte-gauche → porte-bas), fauteuil dans l'angle libre.
 	_canape(f, 9, 13.3, 3.4, tissu)
-	_table(f, 9, 10, 1.6, 0.9, bois)
-	_canape(f, 12.8, 6, 1.3, tissu)
-	# buanderie : machine + évier
-	_bloc_face(f, -12.6, -6, 0.85, 0.85, 0.0, 0.95, email)
-	_lavabo(f, -6, -12.6, pierre)
-	# débarras : rayonnages
+	_table(f, 9, 11.7, 1.6, 0.9, bois)
+	_canape(f, 11.5, 10.2, 1.3, tissu)                          # fauteuil rapproché du duo canapé/table
+	# buanderie : machine à laver détaillée (hublot + bandeau) + évier, regroupés
+	# contre le même mur (angle opposé aux deux portes).
+	_machine_a_laver(f, -12.6, -12.6, email)
+	_lavabo(f, -8.7, -12.6, pierre)
+	# débarras : rayonnages + une caisse posée au sol à côté.
 	_etagere(f, 12.6, -6.5, 3.2, bois)
-	# cage d'escalier : trois marches montantes
-	_bloc_face(f, 9, -10.6, 3.0, 0.9, 0.0, 0.5, pierre)
-	_bloc_face(f, 9, -11.5, 3.0, 0.9, 0.0, 1.0, pierre)
-	_bloc_face(f, 9, -12.4, 3.0, 0.9, 0.0, 1.5, pierre)
+	_bloc_face(f, 12.2, -4.2, 0.7, 0.7, 0.0, 0.6, bois)
+	# cage d'escalier : trois marches montantes collées au mur du fond (le plus
+	# loin de la porte), reculées de la face intérieure du mur pour ne plus la
+	# chevaucher (le mur occupe cu 14.25-14.75, les marches restent sous 14.2).
+	_bloc_face(f, 13.5, -11.25, 1.2, 4.0, 0.0, 0.5, pierre)
+	_bloc_face(f, 12.6, -11.25, 1.2, 4.0, 0.0, 1.0, pierre)
+	_bloc_face(f, 11.7, -11.25, 1.2, 4.0, 0.0, 1.5, pierre)
 
 # ---- Le couloir d'entrée -----------------------------------------------------
 

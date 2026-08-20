@@ -73,7 +73,7 @@ Enrichir le fil rouge ne veut **pas** dire l'allonger : rallonger la chaîne ne 
 
 ## La chaîne d'outils
 - **Blender** — fabrique les décors et les objets 3D. En vue première personne on ne voit pas le personnage, donc l'effort porte sur la maison, pas sur un héros. **Blender est entré dans le jeu** : tout le mobilier, les coffres, le morceau de clé et le badge en viennent. Les rôdeurs, eux, sont un pantin généré sur Meshy — sa source est dans `sources/`, pas dans le fichier Blender.
-- **Godot** — le moteur : assemble la scène et fait vivre l'interaction (déplacement, collisions, tirage au sort, victoire). Piloté par Claude Code via MCP *(corrigé le 09/08/2026 : Cascade a été abandonné, voir `C:\DEV\CLAUDE.md`)*.
+- **Godot** — le moteur : assemble la scène et fait vivre l'interaction (déplacement, collisions, tirage au sort, victoire). Piloté par Claude Code via MCP *(corrigé le 09/08/2026 : Cascade a été abandonné, voir `V:\DEV\CLAUDE.md`)*.
 - **Kinder** — lance le jeu sur PC et le teste à la main. Personne ne peut tester à ta place.
 
 ## Méthode
@@ -111,3 +111,21 @@ L'exécution n'est engagée qu'après le figé. Une décision n'existe que si el
 4. ~~Pas de `graphify-out/`~~ *(vérifié le 09/08/2026)* : tenté, mais graphify ne détecte **aucun fichier `.gd`/`.tscn`** sur ce projet (0 fichier « code » trouvé, seuls les .md/README/sons sont vus) — confirme le constat déjà consigné en mémoire (« graphify est aveugle sur ce projet »). L'initialiser n'apporterait rien tant que cette limite tient ; à refaire si graphify gagne un jour le support Godot.
 5. Vérifier si `verification.log` (daté du 28/07) est à jour par rapport au code actuel avant de s'y fier — le filet de vérification lui-même a des zones connues non couvertes (voir « second angle mort » ci-dessus). **Toujours ouvert** (log daté du 28/07, code du quartier de jeux ajouté depuis).
 6. ~~Le texte mentionne encore Cascade comme pilote de Godot~~ *(corrigé le 09/08/2026)* : remplacé par Claude Code partout dans ce document et dans `BASE.md`.
+
+## Le chantier du quartier cubique *(cadré le 11/08/2026)*
+
+**Ce que c'est :** une suite du manoir, pas un jeu à part. Un espace cubique creux où l'on marche à l'intérieur sur les 6 faces, la gravité bascule d'une face à l'autre (réf. *Manifold Garden*) — une fondation différente du manoir (toute l'IA des rôdeurs et la navigation du manoir supposent un sol plat), donc construite dans ses propres fichiers (`quartier.gd`, `joueur_cube.gd`, `portail.gd`).
+
+**Décision assumée :** on construit le cube d'abord, isolé, avant de décider comment il se branche au manoir. **Le bouton développeur (`bouton_dev.gd`) est l'accès volontaire pendant cette construction** — un raccourci de test, pas une porte de jeu. **Le lien définitif avec le manoir (une porte dans le manoir, un chapitre après la victoire, autre chose) est explicitement non tranché** et sera décidé une fois le cube construit, pas avant. Ce n'est pas un oubli : c'est le choix délibéré de de-risquer la construction avant de figer le branchement.
+
+**État au 11/08/2026 :** le mécanisme central fonctionne et est testable — on marche sur une face, la gravité bascule en passant sur la face voisine. **Les 6 faces ont désormais chacune leurs pièces, leurs plaques de noms (principe du manoir jet 15) et leur mobilier**, validées une à une par Kinder au fil de la construction (bascule testée après chaque face). Noms de pièces posés provisoirement par Claude Code faute de préférence donnée (Kinder : « je choisis des noms neutres, tu ajusteras au test ») — à renommer si besoin en jouant :
+- Face 0 (aile entrée) : Vestiaire, W.-C., Salon, Buanderie, Débarras, Escalier.
+- Face 1 (4 pièces égales) : Atelier, Réserve, Bureau, Chambre froide.
+- Face 2 (2 grandes pièces diagonales) : Salle des machines, Entrepôt.
+- Face 3 (6 petites pièces) : Chaufferie, Local technique, Vestiaires, Casiers, Infirmerie, Loge.
+- Face 4 (enfilade) : Antichambre, Salle commune, Réfectoire.
+- Face 5 (grande + petite) : Grande salle, Remise.
+
+**Le contenu de jeu (objectifs, tension, rôdeurs) n'existe toujours pas sur le cube** — c'est la suite naturelle maintenant que le décor des 6 faces est posé, mais rien n'est tranché sur sa forme (reprendre le fil rouge du manoir ? autre chose ?).
+
+**Correctif du 11/08/2026 : le joueur du cube n'avait pas de torche.** Constat de Kinder après test (« ça fait vide, pas de nom de pièce en entrant, manque une touche esthétique ») — le diagnostic (capture d'écran via godot-ai, jeu lancé) a montré que ce n'était pas un défaut de décor mais l'absence totale de `SpotLight3D` sur `joueur_cube.tscn` (le joueur du manoir en a une, `joueur.tscn` → `Camera3D/Torche`). Sans elle, les pièces sont noires et les plaques de noms (mêmes `Label3D` ombrés que le manoir, jet 15) ne captent aucune lumière donc restent invisibles — le mécanisme marchait déjà, on ne le voyait juste pas. Torche ajoutée, identique à celle du manoir. **Second correctif :** `_etagere()` dans `quartier.gd` posait des tablettes vides ; elle pose maintenant un bric-à-brac (3 objets par tablette, tailles/teintes variées) sur les trois tablettes basses.
