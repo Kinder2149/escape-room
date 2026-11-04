@@ -3,6 +3,28 @@
 > À lire en premier à chaque session, avant toute action.
 > Nom de travail : **Manoir** (changé le 16/07/2026 — la maison est appelée à grandir).
 
+## STATUT — fait foi pour les statuts (lu par Pilotage)
+
+```
+STATUT DU PROJET : En développement
+MISSION : Manoir, du pavillon au manoir (jets 7 à 12) — Close
+MISSION : Les trois pistes (jets 13 à 17) — Close
+  Étape : Le geste qui expose (jet 13) — Close — critère : ouvrir un coffre ou prendre un objet cloue le joueur 2-3 s à découvert, jamais en se cachant
+  Étape : L'étau (jet 14) — Close — critère : un rôdeur qui voit le joueur prévient l'autre, qui rejoint s'il peut arriver utilement
+  Étape : Le fil rouge (jets 15 à 17) — Close — critère : noms de pièces visibles en entrant, pièce d'introduction à deux portes, carte au bouton M
+MISSION : Quartier cubique — En implémentation
+  Étape : (aucune écrite) — contenu de jeu du cube non tranché
+IDÉES PARQUÉES :
+  - Le son
+  - Les textures
+  - Les meubles bas franchissables
+  - La cave
+  - Une course à deux joueurs
+  - Générer le manoir au hasard
+  - Portage Android
+```
+*(Bloc ajouté le 2026-10-30, validé par Kinder.)*
+
 ## Intention
 Un jeu d'évasion en vue première personne. Le joueur se réveille dans un manoir clos qu'il ne connaît pas, sans savoir où il est. Pour sortir, il doit remonter une chaîne : **deux morceaux de clé → le coffre-fort → le badge → la porte rouge** — le tout en évitant **deux rôdeurs** qui traquent dans la pénombre, un par niveau. Des cachettes permettent de les laisser passer.
 
