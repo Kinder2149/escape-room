@@ -6,14 +6,15 @@
 ## STATUT — fait foi pour les statuts (lu par Pilotage)
 
 ```
-STATUT DU PROJET : En développement
+STATUT DU PROJET : En pause
 MISSION : Manoir, du pavillon au manoir (jets 7 à 12) — Close
 MISSION : Les trois pistes (jets 13 à 17) — Close
   Étape : Le geste qui expose (jet 13) — Close — critère : ouvrir un coffre ou prendre un objet cloue le joueur 2-3 s à découvert, jamais en se cachant
   Étape : L'étau (jet 14) — Close — critère : un rôdeur qui voit le joueur prévient l'autre, qui rejoint s'il peut arriver utilement
   Étape : Le fil rouge (jets 15 à 17) — Close — critère : noms de pièces visibles en entrant, pièce d'introduction à deux portes, carte au bouton M
-MISSION : Quartier cubique — En implémentation
+MISSION : Quartier cubique — En attente (1)
   Étape : (aucune écrite) — contenu de jeu du cube non tranché
+REPRISE : trancher avec Kinder le contenu de jeu du cube, puis écrire les étapes et leurs critères
 IDÉES PARQUÉES :
   - Le son
   - Les textures
